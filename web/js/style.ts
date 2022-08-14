@@ -1,0 +1,33 @@
+import "./style.css";
+import "@spectrum-web-components/theme/sp-theme.js";
+import "@spectrum-web-components/theme/express/theme-dark.js";
+import "@spectrum-web-components/theme/express/theme-light.js";
+import "@spectrum-web-components/theme/express/scale-medium.js";
+import "@spectrum-web-components/theme/express/scale-large.js";
+import "@spectrum-web-components/icons-workflow/icons/sp-icon-image.js";
+import "@spectrum-web-components/icons-workflow/icons/sp-icon-help.js";
+import "@spectrum-web-components/illustrated-message/sp-illustrated-message.js";
+import "@spectrum-web-components/link/sp-link.js";
+import "@spectrum-web-components/dropzone/sp-dropzone.js";
+import "@spectrum-web-components/toast/sp-toast.js";
+import "@spectrum-web-components/switch/sp-switch.js";
+import "@spectrum-web-components/popover/sp-popover.js";
+import "@spectrum-web-components/overlay/overlay-trigger.js";
+import '@spectrum-web-components/accordion/sp-accordion.js';
+import '@spectrum-web-components/accordion/sp-accordion-item.js';
+import '@spectrum-web-components/dialog/sp-dialog.js';
+import { Theme } from "@spectrum-web-components/theme";
+
+const pageTheme = document.getElementById("page-theme") as Theme;
+const preferDark = matchMedia("(prefers-color-scheme: dark)");
+
+preferDark.addEventListener("change", function () {
+  pageTheme.color = this.matches ? "dark" : "light";
+});
+preferDark.dispatchEvent(new Event("change"));
+
+const largeViewPort = matchMedia("(min-width: 832px) and (min-height: 514px)");
+largeViewPort.addEventListener("change", function () {
+  pageTheme.scale = this.matches ? "large" : "medium";
+});
+largeViewPort.dispatchEvent(new Event("change"));

@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="description" content="Convert an image into tempdecal.wad" />
+    <meta name="author" content="Nozomi Miyamori" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="/index.css" />
+    <script type="module" src="/js/style"></script>
+    <script type="module" src="/main"></script>
+    <title>Image Tempdecal Converter</title>
+  </head>
+  <body>
+    <sp-theme id="page-theme" theme="express">
+      <h1>Image Tempdecal Converter</h1>
+      <sp-switch id="larger-size-switch" checked
+        >Larger size (only compatible with Sven Co-op) </sp-switch
+      ><overlay-trigger
+        id="larger-size-switch-info"
+        onclick="this.open = this.open ? undefined : 'hover'"
+      >
+        <sp-link slot="trigger" variant="secondary" href="javascript:;"
+          ><sp-icon-help></sp-icon-help
+        ></sp-link>
+        <sp-popover
+          tip
+          slot="hover-content"
+          id="larger-size-switch-info-popover"
+        >
+          <p>
+            Possibly produce a larger image, but imcompatible with other GoldSrc
+            games.
+          </p>
+        </sp-popover>
+      </overlay-trigger>
+      <sp-link variant="secondary" quiet>
+        <sp-dropzone id="img-dropzone">
+          <sp-illustrated-message>
+            <sp-icon-image></sp-icon-image>
+            <span slot="heading">Drag and Drop an Image</span>
+            <label for="img-input" slot="description"
+              >or
+              <sp-link href="javascript:;" quiet>Select an Image</sp-link>
+            </label>
+          </sp-illustrated-message>
+          <input type="file" id="img-input" accept="image/*" />
+          <p>
+            Converter will run on your PC. No data upload will happen.<br />
+            tempdecal.wad will be saved in your Download folder.
+          </p>
+        </sp-dropzone>
+      </sp-link>
+      <h2>Q&amp;A</h2>
+      <sp-accordion>
+        <sp-accordion-item label="What is tempdecal.wad?">
+          <p>
+            <b>tempdecal.wad</b> is a spray format for
+            <sp-link rel="external" href="https://en.wikipedia.org/wiki/GoldSrc"
+              >GoldSrc</sp-link
+            >
+            engine games such as
+            <sp-link rel="external" href="https://svencoop.com/"
+              >Sven Co-op</sp-link
+            >,
+            <sp-link
+              rel="external"
+              href="https://store.steampowered.com/app/10/CounterStrike/"
+              >Counter-Strike 1.6</sp-link
+            >, and
+            <sp-link
+              rel="external"
+              href="https://store.steampowered.com/app/70/HalfLife/"
+              >Half-Life</sp-link
+            >. Only preset sprays are available by default. By replacing
+            tempdecal.wad, you can use any images for sprays, even full color
+            images!
+          </p>
+        </sp-accordion-item>
+        <sp-accordion-item label="How can I create a tempdecal.wad?">
+          <p>
+            That's the why this page exists. Drag and drop your favorite image,
+            you will get your custom tempdecal.wad in a sec.
+          </p>
+        </sp-accordion-item>
+        <sp-accordion-item label="Where should I place my tempdecal.wad?">
+          <p>
+            Here's the summary of folders. Copy tempdecal.wad to the specified
+            folder.
+          </p>
+          <dl>
+            <dt>Sven Co-op</dt>
+            <dd><code>[Game Folder]\svencoop</code></dd>
+            <dt>Counter-Strike 1.6</dt>
+            <dd><code>[Game Folder]\cstrike</code></dd>
+            <dt>Half-Life</dt>
+            <dd><code>[Game Folder]\valve</code></dd>
+          </dl>
+          <p>
+            To open [Game Folder], go to Steam Library, right-click your game,
+            then select <code>Manage > Browse local files</code>.
+          </p>
+          <p>
+            Besides, you should set tempdecal.wad Read-only to avoid it to be
+            overwritten by the game. To set it Read-only, right-click the file,
+            open Properties, check Read-only, then click OK.
+          </p>
+          <p>That's it! You can use your custom spray right now.</p>
+        </sp-accordion-item>
+        <sp-accordion-item
+          label="What image formats does this program support?"
+        >
+          <p>Here's the short list of supported formats.</p>
+          <ul>
+            <li>JPEG</li>
+            <li>PNG</li>
+            <li>GIF</li>
+            <li>BMP</li>
+            <li>WebP</li>
+            <li>AVIF</li>
+          </ul>
+          <p>
+            You can convert any image formats as long as your web browser
+            supports it except SVG images.
+          </p>
+        </sp-accordion-item>
+        <sp-accordion-item label="Is this free?">
+          <p>Yes, of course.</p>
+        </sp-accordion-item>
+        <sp-accordion-item label="Can I get the source code?">
+          <p>
+            Yes.
+            <sp-link
+              href="https://github.com/nm004/img2tempdecal"
+              rel="external"
+              >Here it is.</sp-link
+            >
+          </p>
+        </sp-accordion-item>
+      </sp-accordion>
+      <section id="status-area"></section>
+      <p><sp-link href="/terms-of-use.html">Terms of Use</sp-link></p>
+      <p>
+        <sp-link href="/privacy-policy.html">Privacy Policy</sp-link> (Aug 27,
+        2022: We deleted third party ads policy because this site does not
+        include ads anymore.)
+      </p>
+    </sp-theme>
+  </body>
+</html>
