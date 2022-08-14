@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="description" content="Convert an image into tempdecal.wad" />
+    <meta name="author" content="Nozomi Miyamori" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <script type="module" src="src-js/index"></script>
+    <title>Image Tempdecal Converter</title>
+  </head>
+  <body>
+    <sp-theme id="page-theme" theme="express" color="light" scale="medium">
+      <h1>Image Tempdecal Converter</h1>
+      <p id="about-app">
+        It may take ~3 seconds to convert a 1280x720 image (it depends on your
+        PC). <b>tempdecal.wad</b> will be saved in your Download folder.
+      </p>
+      <sp-switch id="larger-size-switch" checked
+        >Larger size (only compatible with Sven Co-op) </sp-switch
+      ><overlay-trigger
+        id="larger-size-switch-info"
+        onclick="this.open = this.open ? undefined : 'hover'"
+      >
+        <sp-link slot="trigger" variant="secondary" href="javascript:;"
+          ><sp-icon-help></sp-icon-help
+        ></sp-link>
+        <sp-popover
+          tip
+          slot="hover-content"
+          id="larger-size-switch-info-popover"
+        >
+          <p>
+            Possibly produce a larger image, but imcompatible with other GoldSrc
+            games.
+          </p>
+        </sp-popover>
+      </overlay-trigger>
+      <sp-link variant="secondary" quiet>
+        <sp-dropzone id="img-dropzone">
+          <sp-illustrated-message>
+            <sp-icon-image></sp-icon-image>
+            <span slot="heading">Drag and Drop an Image</span>
+            <label for="img-input" slot="description"
+              >or
+              <sp-link href="javascript:;" quiet>Select an Image</sp-link>
+            </label>
+          </sp-illustrated-message>
+          <input type="file" id="img-input" accept="image/*" />
+          <p>Converter will run on your PC. No data upload will happen.</p>
+        </sp-dropzone>
+      </sp-link>
+      <section id="status-area"></section>
+    </sp-theme>
+  </body>
+</html>

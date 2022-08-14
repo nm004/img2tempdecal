@@ -1,0 +1,23 @@
+[package]
+name = "img2tempdecal-web"
+version = "0.1.0"
+authors = ["Nozomi Miyamori"]
+edition = "2021"
+
+[lib]
+crate-type = ["cdylib", "rlib"]
+
+[dependencies]
+img2tempdecal = { path = ".." }
+wasm-bindgen = "0.2.82"
+js-sys = "0.3.59"
+wee_alloc = "0.4.5"
+
+# The `console_error_panic_hook` crate provides better debugging of panics by
+# logging them with `console.error`. This is great for development, but requires
+# all the `std::fmt` and `std::panicking` infrastructure, so isn't great for
+# code size when deploying.
+console_error_panic_hook = { version = "0.1.6", optional = true }
+
+[dev-dependencies]
+wasm-bindgen-test = "0.3.13"
