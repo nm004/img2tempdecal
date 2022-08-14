@@ -1,0 +1,41 @@
+#larger-size-switch {
+    margin-inline-end: 0;
+}
+
+#larger-size-switch-info-popover {
+    inline-size: 16.810rem;
+    padding-inline: 1.6810rem;
+}
+
+#img-dropzone {
+    box-sizing: border-box;
+    padding-block: 2.6810rem;
+}
+
+#img-dropzone > sp-illustrated-message > sp-icon-image {
+    --size: 96px;
+    inline-size: var(--size);
+    block-size: var(--size);
+}
+
+#img-dropzone > sp-illustrated-message {
+    margin-block-end: 1.6810rem;
+}
+
+#img-input {
+    display: none;
+}
+
+#status-area {
+    flex-grow: 1;
+    position: fixed;
+    right: 12px;
+    bottom: 10px;
+    display: inline-flex;
+    flex-direction: column;
+    align-items: end;
+}
+
+#status-area > sp-toast {
+    margin-block-end: 6px;
+}

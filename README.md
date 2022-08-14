@@ -1,10 +1,14 @@
 Img2tempdecal
-==============
+==================
 
-Image tempdecal.wad converter. Tempdecal.wad is custom spray
-for Sven Co-op, Counter-Strike (CS 1.6), Half-Life, etc.
+Image tempdecal.wad converter written in [Rust](https://rust-lang.org/).
+Tempdecal.wad is a custom spray format for Sven Co-op,
+Counter-Strike (CS 1.6), Half-Life, etc.
+
+This codebase includes only libraries and examples. Application code
+is in the [web directory](web)
 
 License
 ----------------
 
-MIT or Public domain (whichever you want).
+MIT-0 or Public domain (whichever you want).
