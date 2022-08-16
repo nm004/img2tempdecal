@@ -1,13 +1,13 @@
-import "./index.css";
-import "./sp-imports";
 import { Toast, ToastVariants } from "@spectrum-web-components/toast";
-import { convert_blob } from "./converter";
-import { Switch } from "@spectrum-web-components/switch"
+import { convert_blob } from "./js/converter";
+import { Switch } from "@spectrum-web-components/switch";
 
 const imgDropzone = document.getElementById("img-dropzone");
 const imgInput = document.getElementById("img-input") as HTMLInputElement;
 const statusArea = document.getElementById("status-area") as HTMLSelectElement;
-const largerSizeSwitch = document.getElementById("larger-size-switch") as Switch
+const largerSizeSwitch = document.getElementById(
+  "larger-size-switch"
+) as Switch;
 
 function push_status(variant: ToastVariants, text: string) {
   const output = document.createElement("output");

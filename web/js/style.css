@@ -1,0 +1,11 @@
+:root {
+  color-scheme: light dark;
+}
+
+body {
+    margin-inline: 28px;
+}
+
+p {
+    line-height: 1.6810;
+}

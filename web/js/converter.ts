@@ -56,7 +56,7 @@ const converterScript = new Blob([
     import.meta.url
   )}")\n`,
   `init()\n`,
-  `self.onmessage = ${onmessage}\n`,
+  `globalThis.onmessage = ${onmessage}\n`,
 ]);
 
 const converterUrl = URL.createObjectURL(converterScript);
