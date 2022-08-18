@@ -2,6 +2,7 @@ lockfileVersion: 5.4
 
 specifiers:
   '@spectrum-web-components/accordion': ^0.7.0
+  '@spectrum-web-components/dialog': ^0.11.0
   '@spectrum-web-components/dropzone': ^0.10.0
   '@spectrum-web-components/icons-workflow': ^0.9.0
   '@spectrum-web-components/illustrated-message': ^0.9.0
@@ -18,6 +19,7 @@ specifiers:
 
 dependencies:
   '@spectrum-web-components/accordion': 0.7.0
+  '@spectrum-web-components/dialog': 0.11.0
   '@spectrum-web-components/dropzone': 0.10.0
   '@spectrum-web-components/icons-workflow': 0.9.0
   '@spectrum-web-components/illustrated-message': 0.9.0
@@ -93,6 +95,13 @@ packages:
       tslib: 2.4.0
     dev: false
 
+  /@spectrum-web-components/button-group/0.9.0:
+    resolution: {integrity: sha512-xSz9MxO6a6GvbGZVhxbSCRXt0GDOT2NDtC7dICKmuXi/n74HBVZ7RVD20vc9tL/VFtrrHNoXEwIXDVlnQR9Ksg==}
+    dependencies:
+      '@spectrum-web-components/base': 0.7.0
+      tslib: 2.4.0
+    dev: false
+
   /@spectrum-web-components/button/0.19.0:
     resolution: {integrity: sha512-qT7+NvP9EZFLSjp37C0NN61CdQfgbNEYr7c7GyA9dXqSzncxCDVr4K8CEKF8+pb94alyUmFHBQPFDM1FfjZ2Aw==}
     dependencies:
@@ -124,6 +133,27 @@ packages:
 
   /@spectrum-web-components/close-button/0.3.0:
     resolution: {integrity: sha512-TFCdCqpsTCDiL9NW2GklEDR1AyXLb6jP44mSLXjrWx1vzyvfzid6G1bIVUBz8CXY5RK3PyJG+EDfmPMw9j+QQA==}
+    dependencies:
+      '@spectrum-web-components/base': 0.7.0
+      tslib: 2.4.0
+    dev: false
+
+  /@spectrum-web-components/dialog/0.11.0:
+    resolution: {integrity: sha512-GuWkGLNmYd9w3MqfeO6OgIitRakfdrOxBI8BBzwMyWx+uyWItZtz7VgRvZ6JMz1BmrE+AKwjK8cEdpC1/Klzqw==}
+    dependencies:
+      '@spectrum-web-components/base': 0.7.0
+      '@spectrum-web-components/button': 0.19.0
+      '@spectrum-web-components/button-group': 0.9.0
+      '@spectrum-web-components/divider': 0.5.0
+      '@spectrum-web-components/icons-workflow': 0.9.0
+      '@spectrum-web-components/modal': 0.7.0
+      '@spectrum-web-components/shared': 0.15.0
+      '@spectrum-web-components/underlay': 0.9.0
+      tslib: 2.4.0
+    dev: false
+
+  /@spectrum-web-components/divider/0.5.0:
+    resolution: {integrity: sha512-gRL8bYtGEIyYpmWKy/xIo9t7HL1Jb1j/oE0rn4vQldlnvA36F0PTZEBO+vcBBfT1Kmv0y3JsSl97Dc75K/+Fqw==}
     dependencies:
       '@spectrum-web-components/base': 0.7.0
       tslib: 2.4.0
@@ -181,6 +211,13 @@ packages:
     dependencies:
       '@spectrum-web-components/base': 0.7.0
       '@spectrum-web-components/shared': 0.15.0
+      tslib: 2.4.0
+    dev: false
+
+  /@spectrum-web-components/modal/0.7.0:
+    resolution: {integrity: sha512-Gy6sKzSZX8Rze0q2/0uWdFc0Hkc80+6V9kmD0IbaEht9FRJoqghEhnfwH+dW9NmQoWmIGnTRrBhGAZPBIb3UPQ==}
+    dependencies:
+      '@spectrum-web-components/base': 0.7.0
       tslib: 2.4.0
     dev: false
 
@@ -256,6 +293,13 @@ packages:
     dependencies:
       '@spectrum-web-components/base': 0.7.0
       '@spectrum-web-components/overlay': 0.18.0
+      tslib: 2.4.0
+    dev: false
+
+  /@spectrum-web-components/underlay/0.9.0:
+    resolution: {integrity: sha512-FIOfWJopB10FdAiDMEemlPHJGAnHL7kxm6AxOstVAGqSHiFr2oCK03LZyk9uqdNjEqaQkphnCveYlRLNMTUfKw==}
+    dependencies:
+      '@spectrum-web-components/base': 0.7.0
       tslib: 2.4.0
     dev: false
 

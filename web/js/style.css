@@ -9,3 +9,7 @@ body {
 p {
     line-height: 1.6810;
 }
+
+dd {
+    margin-block-end: 1.2720rem;
+}

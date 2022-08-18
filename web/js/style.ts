@@ -15,6 +15,7 @@ import "@spectrum-web-components/popover/sp-popover.js";
 import "@spectrum-web-components/overlay/overlay-trigger.js";
 import '@spectrum-web-components/accordion/sp-accordion.js';
 import '@spectrum-web-components/accordion/sp-accordion-item.js';
+import '@spectrum-web-components/dialog/sp-dialog.js';
 import { Theme } from "@spectrum-web-components/theme";
 
 const pageTheme = document.getElementById("page-theme") as Theme;
@@ -25,8 +26,8 @@ preferDark.addEventListener("change", function () {
 });
 preferDark.dispatchEvent(new Event("change"));
 
-const hiDppx = matchMedia("(min-resolution: 2x)");
-hiDppx.addEventListener("change", function () {
-  pageTheme.scale = this.matches ? "medium" : "large";
+const largeViewPort = matchMedia("(min-width: 832px) and (min-height: 514px)");
+largeViewPort.addEventListener("change", function () {
+  pageTheme.scale = this.matches ? "large" : "medium";
 });
-hiDppx.dispatchEvent(new Event("change"));
+largeViewPort.dispatchEvent(new Event("change"));

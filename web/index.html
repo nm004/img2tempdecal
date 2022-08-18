@@ -5,13 +5,13 @@
     <meta name="description" content="Convert an image into tempdecal.wad" />
     <meta name="author" content="Nozomi Miyamori" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link rel="stylesheet" href="index.css" />
-    <script type="module" src="js/style"></script>
-    <script type="module" src="main"></script>
+    <link rel="stylesheet" href="/index.css" />
+    <script type="module" src="/js/style"></script>
+    <script type="module" src="/main"></script>
     <title>Image Tempdecal Converter</title>
   </head>
   <body>
-    <sp-theme id="page-theme" theme="express" color="light" scale="large">
+    <sp-theme id="page-theme" theme="express">
       <h1>Image Tempdecal Converter</h1>
       <sp-switch id="larger-size-switch" checked
         >Larger size (only compatible with Sven Co-op) </sp-switch
@@ -84,18 +84,14 @@
         </sp-accordion-item>
         <sp-accordion-item label="Where should I place my tempdecal.wad?">
           <p>
-            Here's the summary of folders. Copy tempdecal.wad to the
-            specified folder.
+            Here's the summary of folders. Copy tempdecal.wad to the specified
+            folder.
           </p>
           <dl>
             <dt>Sven Co-op</dt>
             <dd><code>[Game Folder]\svencoop</code></dd>
-          </dl>
-          <dl>
             <dt>Counter-Strike 1.6</dt>
             <dd><code>[Game Folder]\cstrike</code></dd>
-          </dl>
-          <dl>
             <dt>Half-Life</dt>
             <dd><code>[Game Folder]\valve</code></dd>
           </dl>
@@ -131,10 +127,12 @@
           <p>Yes, of course.</p>
         </sp-accordion-item>
         <sp-accordion-item label="Can I get the source code?">
-          <p>Yes. <sp-link href="">Here it is.</sp-link></p>
+          <p>Yes. <sp-link href="https://github.com/nm004/img2tempdecal" rel="external">Here it is.</sp-link></p>
         </sp-accordion-item>
       </sp-accordion>
       <section id="status-area"></section>
+      <p><sp-link href="/terms-of-use.html">Terms of Use</sp-link></p>
+      <p><sp-link href="/privacy-policy.html">Privacy Policy</sp-link></p>
     </sp-theme>
   </body>
 </html>
