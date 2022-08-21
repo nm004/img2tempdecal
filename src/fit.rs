@@ -40,24 +40,20 @@ pub(super) fn resize_to_fit_into_tempdecal(
     (new_tex, nw, nh)
 }
 
-/// This finds biggest, most similar size that fits into tempdecal.wad,
-/// s.t. 64 =< result width, result height =< 256.
+/// This finds biggest and most similar texture size that fits into tempdecal.wad,
+/// which holds 16 =< result width, result height =< 256.
 /// Though, if already fits into tempdecal, then return width and height as it is.
 fn calc_optimal_size(width: usize, height: usize, sup_size: usize) -> (usize, usize) {
-    if (width % 16, height % 16) == (0, 0)
-        && width * height < sup_size
-        && width >= 64
-        && height >= 64
-    {
+    if (width % 16, height % 16) == (0, 0) && width * height < sup_size {
         return (width, height);
     }
 
     let wh_r = width as f64 / height as f64;
-    let r = (64..256 + 1).step_by(16);
-    const COUNT: usize = (256 - 64) / 16;
-    // 64, 80, 96, ..., 256, 64, 80, ...
+    let r = (16..256 + 1).step_by(16);
+    const COUNT: usize = 256 / 16;
+    // 16, 32, 48, ..., 224, 240, 256, 16, 32, ...
     let w: Box<_> = repeat(r.clone()).take(COUNT).flatten().collect();
-    // 64, 64, 64, ..., 64, 80, 80, ...
+    // 16, 16, 16, ..., 16, 16, 16, 32, 32...
     let h: Box<_> = r.map(|i| [i; COUNT]).flatten().collect();
 
     let (i, _) = zip(w.iter(), h.iter())

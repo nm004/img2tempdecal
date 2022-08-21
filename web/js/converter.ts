@@ -4,11 +4,12 @@ export async function convert_blob(
 ) {
   const imgBmp = await createImageBitmap(imgSource);
   const cv = document.createElement("canvas");
-  cv.width = imgBmp.width;
-  cv.height = imgBmp.height;
+  const [padW, padH] = [imgBmp.width % 16, imgBmp.height % 16];
+  cv.width = imgBmp.width + padW;
+  cv.height = imgBmp.height + padH;
 
   const ctx = cv.getContext("2d");
-  ctx.drawImage(imgBmp, 0, 0);
+  ctx.drawImage(imgBmp, Math.trunc(padW / 2), Math.trunc(padH / 2));
 
   const imgRaw = ctx.getImageData(0, 0, cv.width, cv.height);
   const buf = imgRaw.data.buffer;
