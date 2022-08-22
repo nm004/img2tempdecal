@@ -1,7 +1,8 @@
 mod fit;
 mod remap;
+mod extend;
 
-use crate::{fit::*, remap::*};
+use crate::{extend::*, fit::*, remap::*};
 use rgb::FromSlice;
 use std::io::{self, Write};
 use wad3::{MipMap, Wad};
@@ -13,8 +14,11 @@ pub fn convert_texture_to_tempdecal(
     out_larger_size: bool,
     write: &mut impl Write,
 ) -> Result<usize, io::Error> {
+    let texture = texture.as_rgba();
+
+    let (texture, width, height) = extend_to_m16(texture, width, height);
     let (texture, width, height) =
-        resize_to_fit_into_tempdecal(texture.as_rgba(), width, height, out_larger_size);
+        resize_to_fit_into_tempdecal(&texture, width, height, out_larger_size);
     let (texture, palette) = remap_to_wad_texture(&texture, width, height);
     save_as_tempdecal(&texture, width, height, palette, write)
 }
