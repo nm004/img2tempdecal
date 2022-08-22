@@ -14,29 +14,26 @@ pub(super) fn resize_to_fit_into_tempdecal(
     let size_sup = if larger_size { 14336 + 1 } else { 12288 };
 
     let (nw, nh) = calc_optimal_size(width, height, size_sup);
-    let ntxt = if (nw, nh) == (width, height) {
-        texture.to_owned()
-    } else {
-        let mut dst = vec![RGBA8::default(); nw * nh];
-        let mut resizer = resize::new(
-            width,
-            height,
-            nw,
-            nh,
-            resize::Pixel::RGBA8,
-            resize::Type::Lanczos3,
-        )
-        .unwrap();
-        resizer.resize(texture, &mut dst).unwrap();
+    if (nw, nh) == (width, height) {
+        return (texture.to_owned(), width, height);
+    }
 
-        // This applies 50% threshold to alpha channel of each pixels to denoise.
-        for i in dst.iter_mut() {
-            i.a = i.a / 0x80 * 0xff
-        }
+    let mut ntxt = vec![RGBA8::default(); nw * nh];
+    let mut resizer = resize::new(
+        width,
+        height,
+        nw,
+        nh,
+        resize::Pixel::RGBA8,
+        resize::Type::Lanczos3,
+    )
+    .unwrap();
+    resizer.resize(texture, &mut ntxt).unwrap();
 
-        dst
-    };
-
+    // This applies 50% threshold to alpha channel of each pixels to denoise.
+    for i in ntxt.iter_mut() {
+        i.a = i.a / 0x80 * 0xff
+    }
     (ntxt, nw, nh)
 }
 
