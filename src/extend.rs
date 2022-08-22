@@ -8,6 +8,9 @@ pub(super) fn extend_to_m16(
     height: usize,
 ) -> (Vec<RGBA8>, usize, usize) {
     let (pad_x, pad_y) = (width % 16, height % 16);
+    if (pad_x, pad_y) == (0, 0) {
+        return (texture.to_owned(), width, height);
+    }
     let (nw, nh) = (width + pad_x, height + pad_y);
     let mut ntxt = vec![RGBA8::new(0, 0, 0xff, 0); nw * nh];
     let (dx, dy) = (pad_x / 2, pad_y / 2);
