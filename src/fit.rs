@@ -1,6 +1,8 @@
 use rgb::RGBA8;
 use std::iter::{repeat, zip};
 
+use crate::denoise;
+
 /// This resizes a texture to fit into tempdecal. If `for_svencoop` is true,
 /// the texture can be bigger, but is not compatible with other GoldSrc games.
 /// Besides, this applies denoise to the resized texture.
@@ -30,10 +32,8 @@ pub(super) fn resize_to_fit_into_tempdecal(
     .unwrap();
     resizer.resize(texture, &mut ntxt).unwrap();
 
-    // This applies 50% threshold to alpha channel of each pixels to denoise.
-    for i in ntxt.iter_mut() {
-        i.a = i.a / 0x80 * 0xff
-    }
+    denoise(&mut ntxt);
+
     (ntxt, nw, nh)
 }
 

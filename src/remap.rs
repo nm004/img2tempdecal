@@ -1,6 +1,8 @@
 use imagequant::Histogram;
 use rgb::{ComponentBytes, RGBA8};
 
+use crate::denoise;
+
 /// This creates indexed color texture and its palette.
 /// Besides, this will do some denoise to the palette.
 pub(super) fn remap_to_wad_texture(
@@ -30,10 +32,7 @@ pub(super) fn remap_to_wad_texture(
     let (mut palette, mips0) = res.remapped(&mut img).unwrap();
     let mut mips0 = mips0.into_boxed_slice();
 
-    // This applies 50% threshold to alpha channel for the palette.
-    for i in palette.iter_mut() {
-        i.a = i.a / 0x80 * 0xff
-    }
+    denoise(&mut palette);
 
     // If a pixel refers to transparent color, then make it refer to 0xff.
     for p in mips0.iter_mut() {

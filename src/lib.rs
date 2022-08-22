@@ -3,7 +3,7 @@ mod remap;
 mod extend;
 
 use crate::{extend::*, fit::*, remap::*};
-use rgb::FromSlice;
+use rgb::{FromSlice, RGBA8};
 use std::io::{self, Write};
 use wad3::{MipMap, Wad};
 
@@ -44,4 +44,11 @@ fn save_as_tempdecal<'a>(
     let wad = Wad::new([(*b"{LOGO\0\0\0\0\0\0\0\0\0\0\0", mm.into())].into());
     wad.save(write)?;
     Ok(wad.size())
+}
+
+/// This applies 50% threshold to alpha channel of each pixels to denoise.
+fn denoise(pixels: &mut [RGBA8]) {
+    for i in pixels.iter_mut() {
+        i.a = i.a / 0x80 * 0xff
+    }
 }
