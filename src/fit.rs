@@ -3,9 +3,9 @@ use std::iter::{repeat, zip};
 
 use crate::denoise;
 
-/// This resizes a texture to fit into tempdecal. If `for_svencoop` is true,
-/// the texture can be bigger, but is not compatible with other GoldSrc games.
-/// Besides, this applies denoise to the resized texture.
+/// This resizes the given texture to fit into tempdecal.
+/// If `larger_size` is true, the resulting texture can be bigger,
+/// but is only valid in Sven Co-op.
 pub(super) fn resize_to_fit_into_tempdecal(
     texture: &[RGBA8],
     width: usize,
@@ -39,7 +39,7 @@ pub(super) fn resize_to_fit_into_tempdecal(
 
 /// This finds biggest and most similar texture size that fits into tempdecal.wad,
 /// which holds 16 =< result width, result height =< 256.
-/// Though, if already fits into tempdecal, then return width and height as it is.
+/// If the texture already fits, this returns the width and the height as it is.
 fn calc_optimal_size(width: usize, height: usize, size_sup: usize) -> (usize, usize) {
     if (width % 16, height % 16) == (0, 0) && width * height < size_sup {
         return (width, height);

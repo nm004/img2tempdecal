@@ -1,12 +1,14 @@
+mod extend;
 mod fit;
 mod remap;
-mod extend;
 
 use crate::{extend::*, fit::*, remap::*};
 use rgb::{FromSlice, RGBA8};
 use std::io::{self, Write};
 use wad3::{MipMap, Wad};
 
+/// This converts the given texture into tempdecal.wad by calling
+/// the subsequent functions. This is the only entry point.
 pub fn convert_texture_to_tempdecal(
     texture: &[u8],
     width: usize,
@@ -23,9 +25,9 @@ pub fn convert_texture_to_tempdecal(
     save_as_tempdecal(&texture, width, height, palette, write)
 }
 
-/// This writes tempdecal.wad with `write` object.
-/// Most primary mipmap (i.e. mips0) is only valid,
-/// though other mips are filled with 0xff.
+/// This writes tempdecal.wad with the `write` object.
+/// Only most primary mipmap (i.e. mips0) is used,
+/// whereas other mips are filled with 0xff.
 fn save_as_tempdecal<'a>(
     mips0: &'a [u8],
     width: usize,

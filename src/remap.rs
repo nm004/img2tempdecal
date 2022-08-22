@@ -4,7 +4,6 @@ use rgb::{ComponentBytes, RGBA8};
 use crate::denoise;
 
 /// This creates indexed color texture and its palette.
-/// Besides, this will do some denoise to the palette.
 pub(super) fn remap_to_wad_texture(
     texture: &[RGBA8],
     width: usize,
