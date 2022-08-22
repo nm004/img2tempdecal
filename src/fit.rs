@@ -9,16 +9,16 @@ pub(super) fn resize_to_fit_into_tempdecal(
     width: usize,
     height: usize,
     larger_size: bool,
-) -> (Vec<RGBA8>, usize, usize) {
+) -> (Box<[RGBA8]>, usize, usize) {
     // According to https://www.the303.org/tutorials/goldsrcspraylogo.html
     let size_sup = if larger_size { 14336 + 1 } else { 12288 };
 
     let (nw, nh) = calc_optimal_size(width, height, size_sup);
     if (nw, nh) == (width, height) {
-        return (texture.to_owned(), width, height);
+        return (texture.into(), width, height);
     }
 
-    let mut ntxt = vec![RGBA8::default(); nw * nh];
+    let mut ntxt = vec![RGBA8::new(0, 0, 0xff, 0); nw * nh].into_boxed_slice();
     let mut resizer = resize::new(
         width,
         height,
