@@ -1,6 +1,6 @@
 export async function convert_blob(
   imgSource: Blob | HTMLImageElement | ImageData | ImageBitmap,
-  out_larger_size: boolean
+  larger_size: boolean
 ) {
   const imgBmp = await createImageBitmap(imgSource);
   const cv = document.createElement("canvas");
@@ -17,7 +17,7 @@ export async function convert_blob(
 
   return new Promise((resolve, reject) => {
     converterQ.push({ resolve, reject });
-    converter.postMessage({ buf, width, height, out_larger_size }, [buf]);
+    converter.postMessage({ buf, width, height, larger_size }, [buf]);
   });
 }
 
@@ -39,7 +39,7 @@ function onmessage(ev: MessageEvent) {
     new Uint8Array(ev.data.buf),
     ev.data.width,
     ev.data.height,
-    ev.data.out_larger_size,
+    ev.data.larger_size,
     new Uint8Array(buffer)
   );
 

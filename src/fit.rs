@@ -8,13 +8,13 @@ pub(super) fn resize_to_fit_into_tempdecal(
     texture: &[RGBA8],
     width: usize,
     height: usize,
-    out_larger_size: bool,
+    larger_size: bool,
 ) -> (Vec<RGBA8>, usize, usize) {
     // According to https://www.the303.org/tutorials/goldsrcspraylogo.html
-    let sup_size = if out_larger_size { 14336 + 1 } else { 12288 };
+    let size_sup = if larger_size { 14336 + 1 } else { 12288 };
 
-    let (nw, nh) = calc_optimal_size(width, height, sup_size);
-    let new_tex = if (nw, nh) == (width, height) {
+    let (nw, nh) = calc_optimal_size(width, height, size_sup);
+    let ntxt = if (nw, nh) == (width, height) {
         texture.to_owned()
     } else {
         let mut dst = vec![RGBA8::default(); nw * nh];
@@ -37,14 +37,14 @@ pub(super) fn resize_to_fit_into_tempdecal(
         dst
     };
 
-    (new_tex, nw, nh)
+    (ntxt, nw, nh)
 }
 
 /// This finds biggest and most similar texture size that fits into tempdecal.wad,
 /// which holds 16 =< result width, result height =< 256.
 /// Though, if already fits into tempdecal, then return width and height as it is.
-fn calc_optimal_size(width: usize, height: usize, sup_size: usize) -> (usize, usize) {
-    if (width % 16, height % 16) == (0, 0) && width * height < sup_size {
+fn calc_optimal_size(width: usize, height: usize, size_sup: usize) -> (usize, usize) {
+    if (width % 16, height % 16) == (0, 0) && width * height < size_sup {
         return (width, height);
     }
 
@@ -60,7 +60,7 @@ fn calc_optimal_size(width: usize, height: usize, sup_size: usize) -> (usize, us
         .map(|c| {
             let (nw, nh) = (*c.0, *c.1);
             let nwh_r = nw as f64 / nh as f64;
-            let ceil_max = ((nw * nh / sup_size) as f64) * f64::MAX;
+            let ceil_max = ((nw * nh / size_sup) as f64) * f64::MAX;
 
             (nwh_r - wh_r).abs() + ceil_max
         })

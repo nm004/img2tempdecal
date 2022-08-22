@@ -11,14 +11,14 @@ pub fn convert_texture_to_tempdecal(
     texture: &[u8],
     width: usize,
     height: usize,
-    out_larger_size: bool,
+    larger_size: bool,
     write: &mut impl Write,
 ) -> Result<usize, io::Error> {
     let texture = texture.as_rgba();
 
     let (texture, width, height) = extend_to_m16(texture, width, height);
     let (texture, width, height) =
-        resize_to_fit_into_tempdecal(&texture, width, height, out_larger_size);
+        resize_to_fit_into_tempdecal(&texture, width, height, larger_size);
     let (texture, palette) = remap_to_wad_texture(&texture, width, height);
     save_as_tempdecal(&texture, width, height, palette, write)
 }
