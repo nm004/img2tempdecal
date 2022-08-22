@@ -4,9 +4,6 @@ use img2tempdecal::*;
 use std::io::Cursor;
 use wasm_bindgen::prelude::*;
 
-#[global_allocator]
-static ALLOC: wee_alloc::WeeAlloc = wee_alloc::WeeAlloc::INIT;
-
 #[wasm_bindgen]
 pub fn convert(
     texture: &[u8],
