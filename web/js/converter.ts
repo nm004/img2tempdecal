@@ -1,21 +1,21 @@
-export async function convert_blob(
+export function convert_blob(
   imgSource: Blob | HTMLImageElement | ImageData | ImageBitmap,
   larger_size: boolean
 ) {
-  const imgBmp = await createImageBitmap(imgSource);
-  const cv = document.createElement("canvas");
-  cv.width = imgBmp.width;
-  cv.height = imgBmp.height;
+  return new Promise(async (resolve, reject) => {
+    const imgBmp = await createImageBitmap(imgSource);
+    const cv = document.createElement("canvas");
+    cv.width = imgBmp.width;
+    cv.height = imgBmp.height;
 
-  const ctx = cv.getContext("2d");
-  ctx.drawImage(imgBmp, 0, 0);
+    const ctx = cv.getContext("2d");
+    ctx.drawImage(imgBmp, 0, 0);
 
-  const imgRaw = ctx.getImageData(0, 0, cv.width, cv.height);
-  const buf = imgRaw.data.buffer;
-  const width = imgRaw.width;
-  const height = imgRaw.height;
+    const imgRaw = ctx.getImageData(0, 0, cv.width, cv.height);
+    const buf = imgRaw.data.buffer;
+    const width = imgRaw.width;
+    const height = imgRaw.height;
 
-  return new Promise((resolve, reject) => {
     converterQ.push({ resolve, reject });
     converter.postMessage({ buf, width, height, larger_size }, [buf]);
   });
