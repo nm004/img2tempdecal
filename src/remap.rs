@@ -35,9 +35,11 @@ pub(super) fn remap_to_wad_texture(
 
     // If a pixel refers to transparent color, then make it refer to 0xff.
     for p in mips0.iter_mut() {
-        if palette[*p as usize].a == 0 {
-            *p = 0xff;
-        }
+        *p = if palette[*p as usize].a == 0 {
+            0xff
+        } else {
+            *p
+        };
     }
 
     // from [RGBA] to [RGB]
