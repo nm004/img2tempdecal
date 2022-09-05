@@ -11,28 +11,30 @@
     <title>Image Tempdecal Converter</title>
   </head>
   <body>
-    <sp-theme id="page-theme" theme="express">
+    <sp-theme id="page-theme">
       <h1>Image Tempdecal Converter</h1>
       <sp-switch id="larger-size-switch" checked
-        >Larger size (only compatible with Sven Co-op) </sp-switch
-      ><overlay-trigger
-        id="larger-size-switch-info"
-        onclick="this.open = this.open ? undefined : 'hover'"
-      >
-        <sp-link slot="trigger" variant="secondary" href="javascript:;"
-          ><sp-icon-help></sp-icon-help
-        ></sp-link>
-        <sp-popover
-          tip
-          slot="hover-content"
-          id="larger-size-switch-info-popover"
+        ><span>Larger size (only compatible with Sven Co-op) </span>
+        <overlay-trigger
+          id="larger-size-switch-info"
+          onclick="this.open = this.open ? undefined : 'hover'"
         >
-          <p>
-            Possibly produce a larger image, but imcompatible with other GoldSrc
-            games.
-          </p>
-        </sp-popover>
-      </overlay-trigger>
+          <sp-link slot="trigger" variant="secondary" href="javascript:;"
+            ><sp-icon-help></sp-icon-help
+          ></sp-link>
+          <sp-popover
+            tip
+            slot="hover-content"
+            id="larger-size-switch-info-popover"
+          >
+            <p>
+              This possibly produces a larger image, but it's imcompatible with
+              other GoldSrc games.
+            </p>
+          </sp-popover>
+        </overlay-trigger>
+      </sp-switch>
+
       <sp-link variant="secondary" quiet>
         <sp-dropzone id="img-dropzone">
           <sp-illustrated-message>
@@ -140,9 +142,7 @@
       <section id="status-area"></section>
       <p><sp-link href="/terms-of-use.html">Terms of Use</sp-link></p>
       <p>
-        <sp-link href="/privacy-policy.html">Privacy Policy</sp-link> (Aug 27,
-        2022: We deleted third party ads policy because this site does not
-        include ads anymore.)
+        <sp-link href="/privacy-policy.html">Privacy Policy</sp-link>
       </p>
     </sp-theme>
   </body>
