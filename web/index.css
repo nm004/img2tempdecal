@@ -1,5 +1,7 @@
-#larger-size-switch {
-    margin-inline-end: 0;
+#larger-size-switch-info > [slot="trigger"] {
+    display: inline-flex;
+    position: relative;
+    z-index: 100;
 }
 
 #larger-size-switch-info-popover {

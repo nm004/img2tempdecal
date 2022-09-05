@@ -14,25 +14,27 @@
     <sp-theme id="page-theme">
       <h1>Image Tempdecal Converter</h1>
       <sp-switch id="larger-size-switch" checked
-        >Larger size (only compatible with Sven Co-op) </sp-switch
-      ><overlay-trigger
-        id="larger-size-switch-info"
-        onclick="this.open = this.open ? undefined : 'hover'"
-      >
-        <sp-link slot="trigger" variant="secondary" href="javascript:;"
-          ><sp-icon-help></sp-icon-help
-        ></sp-link>
-        <sp-popover
-          tip
-          slot="hover-content"
-          id="larger-size-switch-info-popover"
+        ><span>Larger size (only compatible with Sven Co-op) </span>
+        <overlay-trigger
+          id="larger-size-switch-info"
+          onclick="this.open = this.open ? undefined : 'hover'"
         >
-          <p>
-            Possibly produce a larger image, but imcompatible with other GoldSrc
-            games.
-          </p>
-        </sp-popover>
-      </overlay-trigger>
+          <sp-link slot="trigger" variant="secondary" href="javascript:;"
+            ><sp-icon-help></sp-icon-help
+          ></sp-link>
+          <sp-popover
+            tip
+            slot="hover-content"
+            id="larger-size-switch-info-popover"
+          >
+            <p>
+              Possibly produce a larger image, but imcompatible with other
+              GoldSrc games.
+            </p>
+          </sp-popover>
+        </overlay-trigger>
+      </sp-switch>
+
       <sp-link variant="secondary" quiet>
         <sp-dropzone id="img-dropzone">
           <sp-illustrated-message>
