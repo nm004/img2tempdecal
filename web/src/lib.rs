@@ -10,6 +10,7 @@ pub fn convert(
     width: usize,
     height: usize,
     out_larger_size: bool,
+    use_point_resample: bool,
     dst: &mut [u8],
 ) -> usize {
     crate::utils::set_panic_hook();
@@ -19,6 +20,7 @@ pub fn convert(
         width,
         height,
         out_larger_size,
+        use_point_resample,
         &mut Cursor::new(dst),
     )
     .expect("Should not fail to write result. Maybe out of memory?")

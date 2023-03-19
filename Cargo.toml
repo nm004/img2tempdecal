@@ -1,11 +1,11 @@
 [package]
 name = "img2tempdecal"
-version = "1.0.0"
+version = "1.1.0"
 authors = ["Nozomi Miyamori"]
 edition = "2021"
 
 [dependencies]
-wad3 = { git = "https://github.com/nm004/wad3-rs" }
+wad3 = { path = "wad3" }
 imagequant = { version = "4.0.1", default-features = false }
 rgb = "0.8.33"
 resize = "0.7.3"

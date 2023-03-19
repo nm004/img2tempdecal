@@ -1,6 +1,7 @@
 export function convert_blob(
   imgSource: Blob | HTMLImageElement | ImageData | ImageBitmap,
-  larger_size: boolean
+  larger_size: boolean,
+  use_point_resample: boolean
 ) {
   return new Promise(async (resolve, reject) => {
     const imgBmp = await createImageBitmap(imgSource);
@@ -17,7 +18,7 @@ export function convert_blob(
     const height = imgRaw.height;
 
     converterQ.push({ resolve, reject });
-    converter.postMessage({ buf, width, height, larger_size }, [buf]);
+    converter.postMessage({ buf, width, height, larger_size, use_point_resample }, [buf]);
   });
 }
 
@@ -40,6 +41,7 @@ function onmessage(ev: MessageEvent) {
     ev.data.width,
     ev.data.height,
     ev.data.larger_size,
+    ev.data.use_point_resample,
     new Uint8Array(buffer)
   );
 

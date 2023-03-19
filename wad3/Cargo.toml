@@ -1,0 +1,6 @@
+[package]
+name = "wad3"
+version = "0.1.0"
+authors = ["Nozomi Miyamori"]
+edition = "2021"
+
