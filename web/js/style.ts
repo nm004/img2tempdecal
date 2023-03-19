@@ -4,17 +4,12 @@ import "@spectrum-web-components/theme/express/theme-dark.js";
 import "@spectrum-web-components/theme/express/theme-light.js";
 import "@spectrum-web-components/theme/express/scale-large.js";
 import "@spectrum-web-components/icons-workflow/icons/sp-icon-image.js";
-import "@spectrum-web-components/icons-workflow/icons/sp-icon-help.js";
 import "@spectrum-web-components/illustrated-message/sp-illustrated-message.js";
 import "@spectrum-web-components/link/sp-link.js";
 import "@spectrum-web-components/dropzone/sp-dropzone.js";
 import "@spectrum-web-components/toast/sp-toast.js";
 import "@spectrum-web-components/switch/sp-switch.js";
-import "@spectrum-web-components/popover/sp-popover.js";
-import "@spectrum-web-components/overlay/overlay-trigger.js";
-import '@spectrum-web-components/accordion/sp-accordion.js';
-import '@spectrum-web-components/accordion/sp-accordion-item.js';
-import '@spectrum-web-components/dialog/sp-dialog.js';
+import "@spectrum-web-components/dialog/sp-dialog.js";
 import { Theme } from "@spectrum-web-components/theme";
 
 const pageTheme = document.getElementById("page-theme") as Theme;

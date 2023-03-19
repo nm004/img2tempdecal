@@ -13,26 +13,20 @@
   <body>
     <sp-theme id="page-theme">
       <h1>Image Tempdecal Converter</h1>
-      <sp-switch id="larger-size-switch" checked
-        ><span>Larger size (only compatible with Sven Co-op) </span>
-        <overlay-trigger
-          id="larger-size-switch-info"
-          onclick="this.open = this.open ? undefined : 'hover'"
-        >
-          <sp-link slot="trigger" variant="secondary" href="javascript:;"
-            ><sp-icon-help></sp-icon-help
-          ></sp-link>
-          <sp-popover
-            tip
-            slot="hover-content"
-            id="larger-size-switch-info-popover"
-          >
-            <p>
-              This possibly produces a larger image, but it's imcompatible with
-              other GoldSrc games.
-            </p>
-          </sp-popover>
-        </overlay-trigger>
+      <sp-switch id="larger-size-switch" checked>
+        Larger size
+        <small>
+          (this can produce a larger image, but it's only
+          compatible with Sven Co-op)
+        </small>
+      </sp-switch><br />
+      <sp-switch id="point-resample-switch">
+        Point resampling
+        <small>
+          (aka. Nearest neighbor resampling,
+          which will produce a crisp image especially
+          for pixel art)
+        </small>
       </sp-switch>
 
       <sp-link variant="secondary" quiet>
@@ -47,47 +41,50 @@
           </sp-illustrated-message>
           <input type="file" id="img-input" accept="image/*" />
           <p>
-            Converter will run on your PC. No data upload will happen.<br />
-            tempdecal.wad will be saved in your Download folder.
+            The converter will run on your PC. No data upload will happen.<br />
+            Tempdecal.wad will be saved in your Download folder.
           </p>
         </sp-dropzone>
       </sp-link>
-      <h2>Q&amp;A</h2>
-      <sp-accordion>
-        <sp-accordion-item label="What is tempdecal.wad?">
+      <section id="q-and-a">
+        <h2>Q&amp;A</h2>
+        <sp-dialog>
+          <h3 slot="heading">What is a “tempdecal.wad”?</h3>
           <p>
-            <b>tempdecal.wad</b> is a spray format for
+            <b>Tempdecal.wad</b> is a spray format for
             <sp-link rel="external" href="https://en.wikipedia.org/wiki/GoldSrc"
               >GoldSrc</sp-link
             >
             engine games such as
-            <sp-link rel="external" href="https://svencoop.com/"
-              >Sven Co-op</sp-link
+            <sp-link
+              rel="external"
+              href="https://store.steampowered.com/app/70/HalfLife/"
+              >Half-Life</sp-link
             >,
             <sp-link
               rel="external"
               href="https://store.steampowered.com/app/10/CounterStrike/"
               >Counter-Strike 1.6</sp-link
             >, and
-            <sp-link
-              rel="external"
-              href="https://store.steampowered.com/app/70/HalfLife/"
-              >Half-Life</sp-link
-            >. Only preset sprays are available by default. By replacing
-            tempdecal.wad, you can use any images for sprays, even full color
-            images!
+            <sp-link rel="external" href="https://svencoop.com/"
+              >Sven Co-op</sp-link
+            >. Only preset spray is available by default. By replacing
+            a tempdecal.wad, you can use any images for spray,
+            even a full color image!
           </p>
-        </sp-accordion-item>
-        <sp-accordion-item label="How can I create a tempdecal.wad?">
+        </sp-dialog>
+        <sp-dialog>
+          <h3 slot="heading">How can I create a tempdecal.wad?</h3>
           <p>
             That's the why this page exists. Drag and drop your favorite image,
             you will get your custom tempdecal.wad in a sec.
           </p>
-        </sp-accordion-item>
-        <sp-accordion-item label="Where should I place my tempdecal.wad?">
+        </sp-dialog>
+        <sp-dialog>
+          <h3 slot="heading">Where do I have to place a tempdecal.wad?</h3>
           <p>
-            Here's the summary of folders. Copy tempdecal.wad to the specified
-            folder.
+            Here's a summary of folders. Save your tempdecal.wad
+            into the specified folder.
           </p>
           <dl>
             <dt>Sven Co-op</dt>
@@ -102,16 +99,15 @@
             then select <code>Manage > Browse local files</code>.
           </p>
           <p>
-            Besides, you should set tempdecal.wad Read-only to avoid it to be
+            Besides, you should set the tempdecal.wad Read-only to keep it from being
             overwritten by the game. To set it Read-only, right-click the file,
             open Properties, check Read-only, then click OK.
           </p>
           <p>That's it! You can use your custom spray right now.</p>
-        </sp-accordion-item>
-        <sp-accordion-item
-          label="What image formats does this program support?"
-        >
-          <p>Here's the short list of supported formats.</p>
+        </sp-dialog>
+        <sp-dialog>
+          <h3 slot="heading">What image formats does this program support?</h3>
+          <p>Here's a short list of supported formats.</p>
           <ul>
             <li>JPEG</li>
             <li>PNG</li>
@@ -124,11 +120,13 @@
             You can convert any image formats as long as your web browser
             supports it except SVG images.
           </p>
-        </sp-accordion-item>
-        <sp-accordion-item label="Is this free?">
+        </sp-dialog>
+        <sp-dialog>
+          <h3 slot="heading">Is this free?</h3>
           <p>Yes, of course.</p>
-        </sp-accordion-item>
-        <sp-accordion-item label="Can I get the source code?">
+        </sp-dialog>
+        <sp-dialog>
+          <h3 slot="heading">Can I get the source code?</h3>
           <p>
             Yes.
             <sp-link
@@ -137,8 +135,8 @@
               >Here it is.</sp-link
             >
           </p>
-        </sp-accordion-item>
-      </sp-accordion>
+        </sp-dialog>
+      </section>
       <section id="status-area"></section>
       <p><sp-link href="/terms-of-use.html">Terms of Use</sp-link></p>
       <p>

@@ -11,6 +11,7 @@ pub(super) fn resize_to_fit_into_tempdecal(
     width: usize,
     height: usize,
     larger_size: bool,
+    use_point_resample: bool
 ) -> (Box<[RGBA8]>, usize, usize) {
     // According to https://www.the303.org/tutorials/goldsrcspraylogo.html
     let size_sup = if larger_size { 14336 + 1 } else { 12288 };
@@ -27,7 +28,7 @@ pub(super) fn resize_to_fit_into_tempdecal(
         nw,
         nh,
         resize::Pixel::RGBA8,
-        resize::Type::Lanczos3,
+        if use_point_resample { resize::Type::Point } else { resize::Type::Lanczos3 }
     )
     .unwrap();
     resizer.resize(texture, &mut ntxt).unwrap();

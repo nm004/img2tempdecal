@@ -1,11 +1,11 @@
-#larger-size-switch-info > [slot="trigger"] {
+.switch-info > [slot="trigger"] {
     display: inline-flex;
     position: relative;
     z-index: 100;
 }
 
-#larger-size-switch-info-popover {
-    inline-size: 16.810rem;
+.switch-info-popover {
+    inline-size: 26.896rem;
     padding-inline: 1.6810rem;
 }
 
@@ -26,6 +26,10 @@
 
 #img-input {
     display: none;
+}
+
+#q-and-a > sp-dialog {
+    inline-size: 100%;
 }
 
 #status-area {

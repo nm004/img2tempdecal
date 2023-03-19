@@ -1,7 +1,6 @@
 lockfileVersion: 5.4
 
 specifiers:
-  '@spectrum-web-components/accordion': ^0.7.0
   '@spectrum-web-components/dialog': ^0.11.0
   '@spectrum-web-components/dropzone': ^0.10.0
   '@spectrum-web-components/icons-workflow': ^0.9.0
@@ -12,13 +11,11 @@ specifiers:
   '@spectrum-web-components/switch': ^0.10.0
   '@spectrum-web-components/theme': ^0.14.0
   '@spectrum-web-components/toast': ^0.11.0
-  '@spectrum-web-components/tooltip': ^0.11.0
   prettier: 2.7.1
   typescript: ^4.6.4
   vite: ^3.0.0
 
 dependencies:
-  '@spectrum-web-components/accordion': 0.7.0
   '@spectrum-web-components/dialog': 0.11.0
   '@spectrum-web-components/dropzone': 0.10.0
   '@spectrum-web-components/icons-workflow': 0.9.0
@@ -29,7 +26,6 @@ dependencies:
   '@spectrum-web-components/switch': 0.10.0
   '@spectrum-web-components/theme': 0.14.0
   '@spectrum-web-components/toast': 0.11.0
-  '@spectrum-web-components/tooltip': 0.11.0
 
 devDependencies:
   prettier: 2.7.1
@@ -65,17 +61,6 @@ packages:
 
   /@lit/reactive-element/1.3.4:
     resolution: {integrity: sha512-I1wz4uxOA52zSBhKmv4KQWLJpCyvfpnDg+eQR6mjpRgV+Ldi14HLPpSUpJklZRldz0fFmGCC/kVmuc/3cPFqCg==}
-    dev: false
-
-  /@spectrum-web-components/accordion/0.7.0:
-    resolution: {integrity: sha512-bV24DBm6cm7l4EC68rrpFra1QtdG9Sqdy1JvCfghPAx7SlDuJKFFG1C1bb3qMHAuC2KX758aTA+294m2zuI8kA==}
-    dependencies:
-      '@spectrum-web-components/base': 0.7.0
-      '@spectrum-web-components/icon': 0.12.0
-      '@spectrum-web-components/icons-ui': 0.9.0
-      '@spectrum-web-components/reactive-controllers': 0.3.0
-      '@spectrum-web-components/shared': 0.15.0
-      tslib: 2.4.0
     dev: false
 
   /@spectrum-web-components/action-button/0.10.0:
@@ -240,13 +225,6 @@ packages:
       tslib: 2.4.0
     dev: false
 
-  /@spectrum-web-components/reactive-controllers/0.3.0:
-    resolution: {integrity: sha512-hTHsxr9gdloeW+EK19lp+lbAzz9zqcD4jjEwdhyFejgZbdTzqKbXX/tfWa4PdTsjL6qadx5VjGHIE0lrd2Sk5A==}
-    dependencies:
-      lit: 2.2.8
-      tslib: 2.4.0
-    dev: false
-
   /@spectrum-web-components/shared/0.15.0:
     resolution: {integrity: sha512-iKlKJkPSqwNJ3x1jpmtnBs2xA4TEuZuW/36nwFMFFzsWbKAYSt4fKZJp+TaHPbqT1CHQFrzhJBAaXJmwSPmpJw==}
     dependencies:
@@ -285,14 +263,6 @@ packages:
       '@spectrum-web-components/button': 0.19.0
       '@spectrum-web-components/icon': 0.12.0
       '@spectrum-web-components/icons-workflow': 0.9.0
-      tslib: 2.4.0
-    dev: false
-
-  /@spectrum-web-components/tooltip/0.11.0:
-    resolution: {integrity: sha512-EBbZWTc5JOjOSTMVrDDKo+vX09q8rGWxZA7jXjUUmZ1Iw4mRmbfO/BKbedyDOpUnJfIJp59lM0cMfP3qrGMT2g==}
-    dependencies:
-      '@spectrum-web-components/base': 0.7.0
-      '@spectrum-web-components/overlay': 0.18.0
       tslib: 2.4.0
     dev: false
 

@@ -8,6 +8,10 @@ const statusArea = document.getElementById("status-area") as HTMLSelectElement;
 const largerSizeSwitch = document.getElementById(
   "larger-size-switch"
 ) as Switch;
+const pointResampleSwitch = document.getElementById(
+  "point-resample-switch"
+) as Switch;
+
 
 function push_status(variant: ToastVariants, text: string) {
   const output = document.createElement("output");
@@ -26,8 +30,8 @@ function push_status(variant: ToastVariants, text: string) {
 }
 
 function do_convert(file: File) {
-  push_status("info", "In progress...");
-  convert_blob(file, largerSizeSwitch.checked)
+  push_status("info", "Processing...");
+  convert_blob(file, largerSizeSwitch.checked, pointResampleSwitch.checked)
     .then((blob: Blob) => {
       // save wad file
       const a = document.createElement("a");
