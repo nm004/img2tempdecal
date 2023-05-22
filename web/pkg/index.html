@@ -1,13 +1,27 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
-    <meta charset="UTF-8" />
+    <meta charset="utf-8" />
     <meta name="description" content="Convert an image into tempdecal.wad" />
     <meta name="author" content="Nozomi Miyamori" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link rel="stylesheet" href="/index.css" />
-    <script type="module" src="/js/style"></script>
-    <script type="module" src="/main"></script>
+    <link rel="stylesheet" href="common.css" />
+    <link rel="stylesheet" href="style.css" />
+    <script type="module" async>
+      import "@spectrum-web-components/theme/sp-theme.js";
+      import "@spectrum-web-components/theme/express/theme-dark.js";
+      import "@spectrum-web-components/theme/express/theme-light.js";
+      import "@spectrum-web-components/theme/express/scale-large.js";
+      import "@spectrum-web-components/icons-workflow/icons/sp-icon-image.js";
+      import "@spectrum-web-components/illustrated-message/sp-illustrated-message.js";
+      import "@spectrum-web-components/link/sp-link.js";
+      import "@spectrum-web-components/dropzone/sp-dropzone.js";
+      import "@spectrum-web-components/toast/sp-toast.js";
+      import "@spectrum-web-components/switch/sp-switch.js";
+      import "@spectrum-web-components/dialog/sp-dialog.js";
+    </script>
+    <script type="module" src="theme-switch"></script>
+    <script type="module" src="main"></script>
     <title>Image Tempdecal Converter</title>
   </head>
   <body>
@@ -68,16 +82,9 @@
             >, and
             <sp-link rel="external" href="https://svencoop.com/"
               >Sven Co-op</sp-link
-            >. Only preset spray is available by default. By replacing
-            a tempdecal.wad, you can use any images for spray,
+            >. Only preset sprays are available by default. By replacing
+            a tempdecal.wad, you can use any images for sprays,
             even a full color image!
-          </p>
-        </sp-dialog>
-        <sp-dialog>
-          <h3 slot="heading">How can I create a tempdecal.wad?</h3>
-          <p>
-            That's the why this page exists. Drag and drop your favorite image,
-            you will get your custom tempdecal.wad in a sec.
           </p>
         </sp-dialog>
         <sp-dialog>
@@ -104,6 +111,17 @@
             open Properties, check Read-only, then click OK.
           </p>
           <p>That's it! You can use your custom spray right now.</p>
+	  <h4>Note for Sven Co-op players</h4>
+	  <p>
+	    You have to enable sprays in game option. To enable sprays, open Options,
+	    go to Multiplayer tab, click Advanced..., go to Graphics: Custom player
+	    sprays, select Enabled. I recommend Large cache (16MB).
+	  </p>
+	  <h4>Note for pixel art sprays</h4>
+	  <p>
+	    You have to set <code>gl_texturemode GL_NEAREST_MIPMAP_LINEAR</code> from
+	    console to get shaper effect.
+	  </p>
         </sp-dialog>
         <sp-dialog>
           <h3 slot="heading">What image formats does this program support?</h3>
@@ -138,9 +156,9 @@
         </sp-dialog>
       </section>
       <section id="status-area"></section>
-      <p><sp-link href="/terms-of-use.html">Terms of Use</sp-link></p>
+      <p><sp-link href="terms-of-use/">Terms of Use</sp-link></p>
       <p>
-        <sp-link href="/privacy-policy.html">Privacy Policy</sp-link>
+        <sp-link href="privacy-policy/">Privacy Policy</sp-link>
       </p>
     </sp-theme>
   </body>

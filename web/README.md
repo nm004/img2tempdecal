@@ -18,6 +18,9 @@ pnpm run dev
 
 # Production build (output in 'dist')
 pnpm run build
+
+# Preview final output
+pnpm exec vite preview
 ```
 
 License

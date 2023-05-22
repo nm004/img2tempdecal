@@ -13,3 +13,7 @@ p {
 dd {
     margin-block-end: 1.2720rem;
 }
+
+sp-dialog {
+    inline-size: 100%;
+}
