@@ -4,31 +4,31 @@
     "pnpm": ">=7"
   },
   "private": true,
-  "version": "1.1.0",
+  "version": "1.1.1",
   "type": "module",
   "files": [
     "dist"
   ],
   "scripts": {
-    "dev": "wasm-pack build --target no-modules --dev --features console_error_panic_hook && vite --open",
-    "build": "wasm-pack build --target no-modules --release && tsc && vite build",
-    "preview": "vite preview --open"
+    "dev": "wasm-pack build --target web --dev --features console_error_panic_hook && vite --open",
+    "build": "wasm-pack build --target web --release && tsc && vite build"
   },
   "dependencies": {
-    "@spectrum-web-components/dialog": "^0.11.0",
-    "@spectrum-web-components/dropzone": "^0.10.0",
-    "@spectrum-web-components/icons-workflow": "^0.9.0",
-    "@spectrum-web-components/illustrated-message": "^0.9.0",
-    "@spectrum-web-components/link": "^0.13.0",
-    "@spectrum-web-components/overlay": "^0.18.0",
-    "@spectrum-web-components/popover": "^0.12.0",
-    "@spectrum-web-components/switch": "^0.10.0",
-    "@spectrum-web-components/theme": "^0.14.0",
-    "@spectrum-web-components/toast": "^0.11.0"
+    "@spectrum-web-components/dialog": "^0.31.0",
+    "@spectrum-web-components/dropzone": "^0.31.0",
+    "@spectrum-web-components/icons-workflow": "^0.31.0",
+    "@spectrum-web-components/illustrated-message": "^0.31.0",
+    "@spectrum-web-components/link": "^0.31.0",
+    "@spectrum-web-components/overlay": "^0.31.0",
+    "@spectrum-web-components/popover": "^0.31.0",
+    "@spectrum-web-components/switch": "^0.31.0",
+    "@spectrum-web-components/theme": "^0.31.0",
+    "@spectrum-web-components/toast": "^0.31.0"
   },
   "devDependencies": {
-    "prettier": "2.7.1",
-    "typescript": "^4.6.4",
-    "vite": "^3.0.0"
+    "prettier": "^2.8.8",
+    "typescript": "^5.0.4",
+    "vite": "^4.3.8",
+    "vite-plugin-pwa": "^0.16.4"
   }
 }

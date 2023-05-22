@@ -32,8 +32,8 @@ fn main() {
     };
 
     if let Some(o) = cli.output {
-        let file = File::open(o);
-        let mut file = file.expect("Failed to open input file.");
+        let file = File::create(o);
+        let mut file = file.expect("Failed to open output file.");
         convert_texture_to_tempdecal(&img, w, h, cli.large, cli.point_resample, &mut file)
     } else {
         convert_texture_to_tempdecal(&img, w, h, cli.large, cli.point_resample, &mut io::stdout())

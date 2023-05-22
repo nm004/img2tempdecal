@@ -1,11 +1,20 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
-    <meta charset="UTF-8" />
+    <meta charset="utf-8" />
     <meta name="description" content="Convert an image into tempdecal.wad" />
     <meta name="author" content="Nozomi Miyamori" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <script type="module" src="/js/style"></script>
+    <link rel="stylesheet" href="../common.css" />
+    <script type="module" async>
+      import "@spectrum-web-components/theme/sp-theme.js";
+      import "@spectrum-web-components/theme/express/theme-dark.js";
+      import "@spectrum-web-components/theme/express/theme-light.js";
+      import "@spectrum-web-components/theme/express/scale-large.js";
+      import "@spectrum-web-components/link/sp-link.js";
+      import "@spectrum-web-components/dialog/sp-dialog.js";
+    </script>
+    <script type="module" src="../theme-switch"></script>
     <title>Terms of use - Image Tempdecal Converter</title>
   </head>
   <body>
@@ -32,7 +41,7 @@
           SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
         </p>
       </sp-dialog>
-      <p><sp-link href="/">Back</sp-link></p>
+      <p><sp-link href="javascript:history.back()">Back</sp-link></p>
     </sp-theme>
   </body>
 </html>

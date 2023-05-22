@@ -28,10 +28,6 @@
     display: none;
 }
 
-#q-and-a > sp-dialog {
-    inline-size: 100%;
-}
-
 #status-area {
     flex-grow: 1;
     position: fixed;
