@@ -1,3 +1,5 @@
+// This software is in the public domain.
+
 use imagequant::Histogram;
 use rgb::{ComponentBytes, FromSlice, RGBA8};
 use std::io::{self, Write};

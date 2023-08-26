@@ -1,3 +1,5 @@
+// This software is in the public domain.
+
 use img2tempdecal::*;
 use std::io::Cursor;
 use wasm_bindgen::prelude::*;

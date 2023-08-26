@@ -1,3 +1,5 @@
+// This software is in the public domain.
+
 import { Theme } from "@spectrum-web-components/theme";
 
 const pageTheme = document.getElementById("page-theme") as Theme;

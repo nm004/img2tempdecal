@@ -4,14 +4,16 @@
     "pnpm": ">=7"
   },
   "private": true,
-  "version": "1.1.1",
+  "version": "1.1.2",
   "type": "module",
   "files": [
     "dist"
   ],
   "scripts": {
-    "dev": "wasm-pack build --target web --dev --features console_error_panic_hook && vite --open",
-    "build": "wasm-pack build --target web --release && tsc && vite build"
+    "cargo-build": "cargo build --manifest-path ../wasm/Cargo.toml --target wasm32-unknown-unknown",
+    "wasm-bindgen": "wasm-bindgen --target web --out-dir .",
+    "dev": "pnpm run cargo-build --features console_error_panic_hook && pnpm run wasm-bindgen ../wasm/target/wasm32-unknown-unknown/debug/img2tempdecal_web.wasm && vite --open",
+    "build": "pnpm run cargo-build -r && pnpm run wasm-bindgen ../wasm/target/wasm32-unknown-unknown/release/img2tempdecal_web.wasm && tsc && vite build"
   },
   "dependencies": {
     "@spectrum-web-components/dialog": "^0.31.0",

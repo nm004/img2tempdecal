@@ -1,3 +1,5 @@
+// This software is in the public domain.
+
 import init, { convert } from "./img2tempdecal_web";
 
 const done_init = init()

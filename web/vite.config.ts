@@ -1,9 +1,10 @@
+// This software is in the public domain.
+
 import { resolve } from 'path'
 import { defineConfig } from 'vite'
 import { VitePWA } from 'vite-plugin-pwa'
 
 export default defineConfig({
-	root: resolve(__dirname, 'pkg'),
 	plugins: [
 		VitePWA({
 			registerType: 'autoUpdate',
@@ -16,9 +17,9 @@ export default defineConfig({
 	build: {
 		rollupOptions: {
 			input: {
-				main: resolve(__dirname, 'pkg/index.html'),
-				'terms-of-use': resolve(__dirname, 'pkg/terms-of-use/index.html'),
-				'privacy-policy': resolve(__dirname, 'pkg/privacy-policy/index.html'),
+				main: resolve(__dirname, 'index.html'),
+				notice: resolve(__dirname, 'notice/index.html'),
+				privacy_policy: resolve(__dirname, 'privacy-policy/index.html'),
 			}
 		}
 	}

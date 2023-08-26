@@ -12,6 +12,3 @@ resize = "0.7.3"
 [dev-dependencies]
 png = "0.17.5"
 clap = { version = "3.2.12", features = ["derive"] }
-
-[workspace]
-members = ["web"]

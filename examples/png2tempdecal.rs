@@ -1,3 +1,5 @@
+// This software is in the public domain.
+
 use clap::Parser;
 use img2tempdecal::*;
 use std::fs::File;
