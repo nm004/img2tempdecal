@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<!-- This software is in the public domain. -->
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="description" content="Convert an image into tempdecal.wad" />
+    <meta name="author" content="Nozomi Miyamori" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="../common.css" />
+    <script type="module" async>
+      import "@spectrum-web-components/theme/sp-theme.js";
+      import "@spectrum-web-components/theme/express/theme-dark.js";
+      import "@spectrum-web-components/theme/express/theme-light.js";
+      import "@spectrum-web-components/theme/express/scale-large.js";
+      import "@spectrum-web-components/link/sp-link.js";
+      import "@spectrum-web-components/dialog/sp-dialog.js";
+    </script>
+    <script type="module" src="../theme-switch"></script>
+    <title>Notice - Image Tempdecal Converter</title>
+  </head>
+  <body>
+    <sp-theme id="page-theme">
+      <h1>Image Tempdecal Converter NOTICE</h1>
+      <sp-dialog id="definitions">
+        <p>
+          Image Tempdecal Converter is based on the following software. We are
+          out of gratitude for who made them freely available and acknowledge them.
+          We follow their terms of licenses.
+        </p>
+        <pre>
+	  <!-- LICENSE -->
+        </pre>
+      </sp-dialog>
+      <p><sp-link href="javascript:history.back()">Back</sp-link></p>
+    </sp-theme>
+  </body>
+</html>

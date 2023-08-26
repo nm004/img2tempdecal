@@ -7,7 +7,7 @@ Build Requirements
 ----------------
 
  * [pnpm](https://pnpm.io/)
- * [wasm-pack](https://github.com/rustwasm/wasm-pack)
+ * [wasm-bindgen](https://github.com/rustwasm/wasm-bindgen)
 
 Build
 ----------------

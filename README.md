@@ -8,6 +8,8 @@ Counter-Strike (CS 1.6), Half-Life, etc.
 This codebase includes only libraries and examples. Application code
 is in the [web directory](web)
 
+[wasm directory](wasm) is binding code for web.
+
 License
 ----------------
 

@@ -1,3 +1,5 @@
+// This software is in the public domain.
+
 import { Toast, ToastVariants } from "@spectrum-web-components/toast";
 import { Switch } from "@spectrum-web-components/switch";
 import { Dropzone } from "@spectrum-web-components/dropzone";
@@ -43,24 +45,15 @@ const do_convert = (file: File) => {
 }
 
 imgInput.addEventListener("change", () => {
-	if (imgInput.files === null) return;
-	const f = imgInput.files.item(0);
-	if (!f) {
-		return;
-	}
-	do_convert(f);
+	const f = imgInput.files?.item(0);
+	f && do_convert(f);
 });
 
-
-imgDropzone.addEventListener("sp-dropzone-drop", ((ev: DragEvent) => {
-	if (ev.dataTransfer === null) return;
-	const f = ev.dataTransfer.items[0].getAsFile();
-	if (!f) {
-		return;
-	}
-
+imgDropzone.addEventListener("sp-dropzone-drop", ((ev: Event) => {
+	if (!(ev instanceof CustomEvent)) return;
+	const f = ev.detail.dataTransfer.files[0];
 	do_convert(f);
-}) as EventListener);
+}));
 
 imgDropzone.addEventListener("click", () => {
 	imgInput.click();
