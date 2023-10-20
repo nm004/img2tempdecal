@@ -1,34 +1,35 @@
-// This software is in the public domain.
+// This code is in the public domain.
+
+pub use rgb::{FromSlice, RGBA8};
 
 use imagequant::Histogram;
-use rgb::{ComponentBytes, FromSlice, RGBA8};
+use rgb::ComponentBytes;
 use std::io::{self, Write};
 use std::iter::{repeat, zip};
-use std::mem::size_of;
+use std::mem::{size_of, size_of_val};
 
 const PALETTE_COUNT: u16 = 256;
 
-/// This converts the given texture into tempdecal.wad by calling
-/// the subsequent functions. This is an entry point.
+/// This converts the given texture into tempdecal.wad by calling the subsequent functions.
+/// Texture must be raw RGBA8 format. This is an entry point of this library.
 pub fn convert_texture_to_tempdecal(
-    texture: &[u8],
+    write: &mut impl Write,
+    texture: &[RGBA8],
     width: usize,
     height: usize,
     larger_size: bool,
     use_point_resample: bool,
-    write: &mut impl Write,
 ) -> Result<usize, io::Error> {
-    let texture = texture.as_rgba();
-
     let (texture, width, height) = extend_to_m16(texture, width, height);
     let (texture, width, height) =
         resize_to_fit_into_tempdecal(&texture, width, height, larger_size, use_point_resample);
     let (texture, palette) = remap_to_wad_texture(&texture, width, height);
-    save_as_tempdecal(&texture, width, height, &palette, write)
+    save_as_tempdecal(write, &texture, width, height, &palette)
 }
 
-/// This extends an input texture. The resulting width and height
-/// are multiples of 16.
+/// This extends an input texture. The resulting width and height are multiples of 16.
+/// Padded pixels are copied from the edge of an original texture, but their alpha channel
+/// is 0. By doing so, undesirable aliasing on the edges can be avoided during resizing.
 fn extend_to_m16(texture: &[RGBA8], width: usize, height: usize) -> (Box<[RGBA8]>, usize, usize) {
     let (pad_x, pad_y) = (width % 16, height % 16);
     if (pad_x, pad_y) == (0, 0) {
@@ -74,7 +75,7 @@ fn extend_to_m16(texture: &[RGBA8], width: usize, height: usize) -> (Box<[RGBA8]
 
 /// This resizes a given texture to fit into tempdecal.
 /// If larger_size is true, the resulting texture can be bigger,
-/// but it is only valid in Sven Co-op.
+/// but it is only valid for Sven Co-op.
 fn resize_to_fit_into_tempdecal(
     texture: &[RGBA8],
     width: usize,
@@ -82,7 +83,7 @@ fn resize_to_fit_into_tempdecal(
     larger_size: bool,
     use_point_resample: bool,
 ) -> (Box<[RGBA8]>, usize, usize) {
-    // According to https://www.the303.org/tutorials/goldsrcspraylogo.html
+    // Ref. https://www.the303.org/tutorials/goldsrcspraylogo.html
     let size_sup = if larger_size { 14336 + 1 } else { 12288 };
 
     let (nw, nh) = calc_optimal_size(width, height, size_sup);
@@ -193,56 +194,73 @@ fn remap_to_wad_texture(
     (mips0, palette)
 }
 
+/// This makes alpha channel of each pixels 0xff
+/// if it is above or equal to the half of the maximum value.
+fn denoise(pixels: &mut [RGBA8]) {
+    for i in pixels.iter_mut() {
+        i.a = i.a / 0x80 * 0xff
+    }
+}
+
 /// This writes tempdecal.wad with the `write` object.
 /// Only most primary mipmap (i.e. mips0) is used,
 /// whereas other mips are filled with 0xff.
 fn save_as_tempdecal<'a>(
+    write: &mut impl Write,
     mips0: &'a [u8],
     width: usize,
     height: usize,
     palette: &'a [u8; (PALETTE_COUNT as usize) * 3],
-    write: &mut impl Write,
 ) -> Result<usize, io::Error> {
-    let name = b"{LOGO\0\0\0\0\0\0\0\0\0\0\0";
-    let o0 = 40;
-    let o1 = o0 + width * height;
-    let o2 = o1 + width * height / 4;
-    let o3 = o2 + width * height / 16;
-    let mips1 = &vec![0xff; width * height / 4];
-    let mips2 = &vec![0xff; width * height / 16];
-    let mips3 = &vec![0xff; width * height / 64];
-    let header_size = (size_of::<[u8; 4]>() + size_of::<u32>() + size_of::<u32>()) as u32;
-    let texture_size = (size_of::<[u8; 16]>()
+    type Magic = [u8; 4];
+    type Name = [u8; 16];
+    const MAGIC: &Magic = b"WAD3";
+    let name: &Name = b"{LOGO\0\0\0\0\0\0\0\0\0\0\0";
+    let w: u32 = width as u32;
+    let h: u32 = height as u32;
+    let m0size = w*h;
+    let m1size = m0size / 4;
+    let m2size = m0size / 16;
+    let m3size = m0size / 64;
+    let o0: u32 = 40;
+    let o1: u32 = o0 + m0size;
+    let o2: u32 = o1 + m1size;
+    let o3: u32 = o2 + m2size;
+    let mips1: &[u8] = &vec![0xff; m1size as usize];
+    let mips2: &[u8] = &vec![0xff; m2size as usize];
+    let mips3: &[u8] = &vec![0xff; m3size as usize];
+    let header_size: u32 = (size_of::<Magic>() + size_of::<u32>() + size_of::<u32>()) as u32;
+    let texture_size: u32 = (size_of::<Name>()
         + size_of::<u32>()
         + size_of::<u32>()
         + size_of::<u32>()
         + size_of::<u32>()
         + size_of::<u32>()
         + size_of::<u32>()
-        + mips0.len()
-        + mips1.len()
-        + mips2.len()
-        + mips3.len()
+        + size_of_val(mips0)
+        + size_of_val(mips1)
+        + size_of_val(mips2)
+        + size_of_val(mips3)
         + size_of::<u16>()
-        + size_of::<[u8; PALETTE_COUNT as usize * 3]>()
+        + size_of::<[u8; 3 * PALETTE_COUNT as usize]>() // R, G, B
         + size_of::<[u8; 2]>()) as u32;
-    let dir_entry_size = (size_of::<u32>()
+    let dir_entry_size: u32 = (size_of::<u32>()
         + size_of::<u32>()
         + size_of::<u32>()
         + size_of::<u8>()
         + size_of::<u8>()
         + size_of::<[u8; 2]>()
-        + size_of::<[u8; 16]>()) as u32;
+        + size_of::<Name>()) as u32;
 
     // header
-    write.write_all(b"WAD3")?;
+    write.write_all(MAGIC)?;
     write.write_all(&1u32.to_le_bytes())?;
     write.write_all(&(header_size + texture_size).to_le_bytes())?; // offset to directory
 
     // texture
     write.write_all(name)?;
-    write.write_all(&(width as u32).to_le_bytes())?;
-    write.write_all(&(height as u32).to_le_bytes())?;
+    write.write_all(&w.to_le_bytes())?;
+    write.write_all(&h.to_le_bytes())?;
     write.write_all(&o0.to_le_bytes())?; // offset from begining of texture
     write.write_all(&o1.to_le_bytes())?;
     write.write_all(&o2.to_le_bytes())?;
@@ -256,21 +274,13 @@ fn save_as_tempdecal<'a>(
     write.write_all(&[0; 2])?; // padding
 
     // directory
-    write.write_all(&header_size.to_le_bytes())?; // offset to texture from begining of WAD file
+    write.write_all(&header_size.to_le_bytes())?; // offset to texture from the begining of WAD file
     write.write_all(&texture_size.to_le_bytes())?; // compressed file size (same with file size in disk)
     write.write_all(&texture_size.to_le_bytes())?; // file size in disk
-    write.write_all(&(0x43 as u8).to_le_bytes())?; // data type is mipmap
+    write.write_all(&0x43u8.to_le_bytes())?; // data type is mipmap
     write.write_all(&0u8.to_le_bytes())?; // use compression (always 0: never used)
     write.write_all(&[0; 2])?; // padding
     write.write_all(name)?;
 
     Ok((header_size + texture_size + dir_entry_size) as usize)
-}
-
-/// This makes alpha channel of each pixels 0xff
-/// if it is above or equal to the half of the maximum value.
-fn denoise(pixels: &mut [RGBA8]) {
-    for i in pixels.iter_mut() {
-        i.a = i.a / 0x80 * 0xff
-    }
 }

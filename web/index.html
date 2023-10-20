@@ -1,166 +1,162 @@
 <!DOCTYPE html>
-<!-- This software is in the public domain -->
+<!-- This code is in the public domain -->
 <html lang="en">
-  <head>
-    <meta charset="utf-8" />
-    <meta name="description" content="Convert an image into tempdecal.wad" />
-    <meta name="author" content="Nozomi Miyamori" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link rel="stylesheet" href="common.css" />
-    <link rel="stylesheet" href="style.css" />
-    <script type="module" async>
-      import "@spectrum-web-components/theme/sp-theme.js";
-      import "@spectrum-web-components/theme/express/theme-dark.js";
-      import "@spectrum-web-components/theme/express/theme-light.js";
-      import "@spectrum-web-components/theme/express/scale-large.js";
-      import "@spectrum-web-components/icons-workflow/icons/sp-icon-image.js";
-      import "@spectrum-web-components/illustrated-message/sp-illustrated-message.js";
-      import "@spectrum-web-components/link/sp-link.js";
-      import "@spectrum-web-components/dropzone/sp-dropzone.js";
-      import "@spectrum-web-components/toast/sp-toast.js";
-      import "@spectrum-web-components/switch/sp-switch.js";
-      import "@spectrum-web-components/dialog/sp-dialog.js";
-    </script>
-    <script type="module" src="theme-switch"></script>
-    <script type="module" src="main"></script>
-    <title>Image Tempdecal Converter</title>
-  </head>
-  <body>
-    <sp-theme id="page-theme">
-      <h1>Image Tempdecal Converter</h1>
-      <sp-switch id="larger-size-switch" checked>
-        Larger size
-        <small>
-          (this can produce a larger image, but it's only
-          compatible with Sven Co-op)
-        </small>
-      </sp-switch><br />
-      <sp-switch id="point-resample-switch">
-        Point resampling
-        <small>
-          (aka. Nearest neighbor resampling,
-          which will produce a crisp image especially
-          for pixel art)
-        </small>
-      </sp-switch>
-
-      <sp-link variant="secondary" quiet>
-        <sp-dropzone id="img-dropzone">
-          <sp-illustrated-message>
-            <sp-icon-image></sp-icon-image>
-            <span slot="heading">Drag and Drop an Image</span>
-            <label for="img-input" slot="description"
-              >or
-              <sp-link href="javascript:;" quiet>Select an Image</sp-link>
-            </label>
-          </sp-illustrated-message>
-          <input type="file" id="img-input" accept="image/*" />
-          <p>
-            The converter will run on your PC. No data upload will happen.<br />
-            Tempdecal.wad will be saved in your Download folder.
-          </p>
-        </sp-dropzone>
-      </sp-link>
-      <section id="q-and-a">
-        <h2>Q&amp;A</h2>
-        <sp-dialog>
-          <h3 slot="heading">What is a “tempdecal.wad”?</h3>
-          <p>
-            <b>Tempdecal.wad</b> is a spray format for
-            <sp-link rel="external" href="https://en.wikipedia.org/wiki/GoldSrc"
-              >GoldSrc</sp-link
-            >
-            engine games such as
-            <sp-link
-              rel="external"
-              href="https://store.steampowered.com/app/70/HalfLife/"
-              >Half-Life</sp-link
-            >,
-            <sp-link
-              rel="external"
-              href="https://store.steampowered.com/app/10/CounterStrike/"
-              >Counter-Strike 1.6</sp-link
-            >, and
-            <sp-link rel="external" href="https://svencoop.com/"
-              >Sven Co-op</sp-link
-            >. Only preset sprays are available by default. By replacing
-            a tempdecal.wad, you can use any images for sprays,
-            even a full color image!
-          </p>
-        </sp-dialog>
-        <sp-dialog>
-          <h3 slot="heading">Where do I have to place a tempdecal.wad?</h3>
-          <p>
-            Here's a summary of folders. Save your tempdecal.wad
-            into the specified folder.
-          </p>
-          <dl>
-            <dt>Sven Co-op</dt>
-            <dd><code>[Game Folder]\svencoop</code></dd>
-            <dt>Counter-Strike 1.6</dt>
-            <dd><code>[Game Folder]\cstrike</code></dd>
-            <dt>Half-Life</dt>
-            <dd><code>[Game Folder]\valve</code></dd>
-          </dl>
-          <p>
-            To open [Game Folder], go to Steam Library, right-click your game,
-            then select <code>Manage > Browse local files</code>.
-          </p>
-          <p>
-            Besides, you should set the tempdecal.wad Read-only to keep it from being
-            overwritten by the game. To set it Read-only, right-click the file,
-            open Properties, check Read-only, then click OK.
-          </p>
-          <p>That's it! You can use your custom spray right now.</p>
-	  <h4>Note for Sven Co-op players</h4>
-	  <p>
-	    You have to enable sprays in game option. To enable sprays, open Options,
-	    go to Multiplayer tab, click Advanced..., go to Graphics: Custom player
-	    sprays, select Enabled. I recommend Large cache (16MB).
-	  </p>
-	  <h4>Note for pixel art sprays</h4>
-	  <p>
-	    You have to set <code>gl_texturemode GL_NEAREST_MIPMAP_LINEAR</code> from
-	    console to get shaper effect.
-	  </p>
-        </sp-dialog>
-        <sp-dialog>
-          <h3 slot="heading">What image formats does this program support?</h3>
-          <p>Here's a short list of supported formats.</p>
-          <ul>
-            <li>JPEG</li>
-            <li>PNG</li>
-            <li>GIF</li>
-            <li>BMP</li>
-            <li>WebP</li>
-            <li>AVIF</li>
-          </ul>
-          <p>
-            You can convert any image formats as long as your web browser
-            supports it except SVG images.
-          </p>
-        </sp-dialog>
-        <sp-dialog>
-          <h3 slot="heading">Is this free?</h3>
-          <p>Yes, of course.</p>
-        </sp-dialog>
-        <sp-dialog>
-          <h3 slot="heading">Can I get the source code?</h3>
-          <p>
-            Yes.
-            <sp-link
-              href="https://github.com/nm004/img2tempdecal"
-              rel="external"
-              >Here it is.</sp-link
-            >
-          </p>
-        </sp-dialog>
-      </section>
-      <section id="status-area"></section>
-      <p><sp-link href="notice/">Notice</sp-link></p>
-      <p>
-        <sp-link href="privacy-policy/">Privacy Policy</sp-link>
-      </p>
-    </sp-theme>
-  </body>
+	<head>
+		<meta charset="utf-8" />
+		<meta name="description" content="Convert an image into tempdecal.wad" />
+		<meta name="author" content="Nozomi Miyamori" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<link rel="stylesheet" href="/style.css" />
+		<script type="module" src="/src/style.ts"></script>
+		<script type="module" src="/src/main.ts"></script>
+		<title>Image Tempdecal Converter</title>
+	</head>
+	<body>
+		<header><h1>Image Tempdecal Converter</h1></header>
+		<main>
+			<article class="converter">
+				<header>
+					<form class="switch-with-label">
+						<pf-switch id="larger-size-switch" checked></pf-switch>
+						<label for="larger-size-switch">
+							Larger size
+							<small>
+								(this can produce a larger image, but it's only
+								compatible with Sven Co-op)
+							</small>
+						</label>
+					</form>
+					<form class="switch-with-label">
+						<pf-switch id="point-resample-switch"></pf-switch>
+						<label for="point-resample-switch">
+							Point resampling
+							<small>
+								(this will produce a crisp image especially
+								for pixel art, though, not suitable for photographic images)
+							</small>
+						</label>
+					</form>
+				</header>
+				<form id="img-dropzone">
+					<input type="file" id="img-input" accept="image/*" />
+					<label for="img-input">
+						Drag and drop an image or <a href="javascript:;">Select an image</a>
+					</label>
+				</form>
+				<footer>
+					<p>
+						<small>
+							The converter will run on your PC. No data uploading will happen.
+							Tempdecal.wad will be saved into Download folder on your PC.
+						</small>
+					</p>
+					<p>
+						<output id="status-msg" for="img-input"></output>
+					</p>
+				</footer>
+			</article>
+			<article>
+				<h2>Q&amp;A</h2>
+				<pf-panel>
+					<h3 slot="header">What is <dfn>tempdecal.wad</dfn>?</h3>
+					<article>
+						<p>
+							<dfn>Tempdecal.wad</dfn> is a spray format for
+							<cite><a rel="external"
+									 href="https://en.wikipedia.org/wiki/GoldSrc"
+									 >GoldSrc</a></cite> engine games such as
+							<cite><a rel="external"
+									 href="https://store.steampowered.com/app/70/HalfLife/"
+									 >Half-Life</a></cite>,
+							<cite><a rel="external"
+									 href="https://store.steampowered.com/app/10/CounterStrike/"
+									 >Counter-Strike 1.6</a></cite>, and
+							<cite><a rel="external"
+									 href="https://svencoop.com/"
+									 >Sven Co-op</a></cite>.
+							Only preset sprays are available by default. By replacing
+							a tempdecal.wad, you can use any images for sprays,
+							even a colored image!
+						</p>
+					</article>
+				</pf-panel>
+				<pf-panel>
+					<h3 slot="header">Where do I have to place a tempdecal.wad?</h3>
+					<article>
+						<p>
+							A summary of installation folders is below. Save a tempdecal.wad
+							into the specified folder.
+						</p>
+						<dl>
+							<dt>Sven Co-op</dt>
+							<dd><dfn>Game Folder\svencoop</dfn></dd>
+							<dt>Counter-Strike 1.6</dt>
+							<dd><dfn>Game Folder\cstrike</dfn></dd>
+							<dt>Half-Life</dt>
+							<dd><dfn>Game Folder\valve</dfn></dd>
+						</dl>
+						<p>
+							To open <dfn>Game Folder</dfn>, open Steam, go to Steam Library,
+							right-click the game, then select “Manage > Browse local files”.
+						</p>
+						<p>
+							Besides, you should set the tempdecal.wad Read-only to keep it from being
+							overwritten by the game. To set it Read-only, right-click the file,
+							open Properties, check Read-only, then click OK.
+						</p>
+						<p>That's it! You can now use your custom spray.</p>
+						<section>
+							<h4>Note for Sven Co-op players</h4>
+							<p>
+								You have to enable sprays in game option. To enable sprays, open Options,
+								go to Multiplayer tab, click Advanced..., go to Graphics: Custom player
+								sprays, select Enabled. I recommend Large cache (16MB).
+							</p>
+						</section>
+						<section>
+							<h4>Note for pixel art sprays</h4>
+							<p>
+								You have to set <code>gl_texturemode GL_NEAREST_MIPMAP_LINEAR</code>
+								on the console to get shaper effect.
+							</p>
+						</section>
+					</article>
+				</pf-panel>
+				<pf-panel>
+					<h3 slot="header">What image formats does this program support?</h3>
+					<article>
+						<p>Here's a short list of supported formats.</p>
+						<ul>
+							<li>JPEG</li>
+							<li>PNG</li>
+							<li>GIF</li>
+							<li>BMP</li>
+							<li>WebP</li>
+							<li>AVIF</li>
+						</ul>
+						<p>
+							You can convert any images as long as your web browser
+							supports except SVG images.
+						</p>
+					</article>
+				</pf-panel>
+				<pf-panel>
+					<h3 slot="header">Is this free?</h3>
+					<article><p>Yes, of course.</p></article>
+				</pf-panel>
+				<pf-panel>
+					<h3 slot="header">Can I get the source code?</h3>
+					<article><p>
+						Yes. <a rel="external"
+								href="https://github.com/nm004/img2tempdecal"
+								>Here it is the source code.</a>
+					</p></article>
+				</pf-panel>
+			</article>
+		</main>
+		<p>
+			<a href="./notice/">Notice</a><br />
+			<a href="./privacy-policy/">Privacy Policy</a>
+		</p>
+	</body>
 </html>

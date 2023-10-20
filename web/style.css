@@ -1,45 +1,88 @@
-/* This software is in the public domain. */
+/* This code is in the public domain. */
 
-.switch-info > [slot="trigger"] {
-    display: inline-flex;
-    position: relative;
-    z-index: 100;
+:root {
+	color-scheme: light dark;
+	font-family: sans-serif;
+	margin: 1.68em;
+	line-height: 1.68;
+	--pf-global--BackgroundColor--100: transparent;
 }
 
-.switch-info-popover {
-    inline-size: 26.896rem;
-    padding-inline: 1.6810rem;
+pre, article.converter {
+	line-height: initial;
 }
 
-#img-dropzone {
-    box-sizing: border-box;
-    padding-block: 2.6810rem;
+dt {
+	padding-block-start: 0.38rem;
 }
 
-#img-dropzone > sp-illustrated-message > sp-icon-image {
-    --size: 96px;
-    inline-size: var(--size);
-    block-size: var(--size);
+form.switch-with-label {
+	padding-block-start: 0.62rem;
 }
 
-#img-dropzone > sp-illustrated-message {
-    margin-block-end: 1.6810rem;
+form.switch-with-label > label {
+	cursor: pointer;
+	padding-inline: 0.38ex;
 }
 
 #img-input {
-    display: none;
+	display: none;
 }
 
-#status-area {
-    flex-grow: 1;
-    position: fixed;
-    right: 12px;
-    bottom: 10px;
-    display: inline-flex;
-    flex-direction: column;
-    align-items: end;
+#img-dropzone {
+	font-size: larger;
+	padding-block: 6.85rem;
+	border: 0.24ex dashed rgb(34, 34, 34, 0.62);
+	border-radius: 11px;
+	margin: 0.62rem 2.62rem 0.38rem;
+	text-align: center;
 }
 
-#status-area > sp-toast {
-    margin-block-end: 6px;
+#img-dropzone:hover, #img-dropzone.file-dragging {
+	border-style: double;
+	border-color: rgb(34, 34, 34);
+	cursor: pointer;
+}
+
+@media (prefers-color-scheme: dark) {
+	#img-dropzone {
+		border-color: rgb(235, 235, 235, 0.62);
+	}
+	#img-dropzone:hover, #img-dropzone.file-dragging {
+		border-color: rgb(235, 235, 235);
+	}
+}
+
+#img-dropzone.file-dragging {
+	background: rgb(2, 101, 220, .1);
+	border-color: rgb(20, 122, 243);
+}
+
+#img-dropzone > * {
+	pointer-events: none;
+}
+
+article.converter > footer {
+	padding-inline: 2.62rem;
+}
+
+article.converter > footer > p {
+	margin-block: 0 0.62rem;
+}
+
+#status-msg.ok {
+	color: green;
+}
+
+#status-msg.ng {
+	color: crimson;
+}
+
+@media (prefers-color-scheme: dark) {
+	#status-msg.ok {
+		color: lightgreen;
+	}
+	#status-msg.ng {
+		color: indianred;
+	}
 }

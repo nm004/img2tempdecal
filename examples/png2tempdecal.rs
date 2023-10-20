@@ -32,13 +32,14 @@ fn main() {
     } else {
         get_image(io::stdin())
     };
+    let img = img.as_rgba();
 
     if let Some(o) = cli.output {
         let file = File::create(o);
         let mut file = file.expect("Failed to open output file.");
-        convert_texture_to_tempdecal(&img, w, h, cli.large, cli.point_resample, &mut file)
+        convert_texture_to_tempdecal(&mut file, img, w, h, cli.large, cli.point_resample)
     } else {
-        convert_texture_to_tempdecal(&img, w, h, cli.large, cli.point_resample, &mut io::stdout())
+        convert_texture_to_tempdecal(&mut io::stdout(), img, w, h, cli.large, cli.point_resample)
     }
     .expect("Error occured while writing tempdecal.");
 }
