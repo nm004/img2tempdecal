@@ -23,5 +23,6 @@ dist-ssr
 *.sln
 *.sw?
 
-img2tempdecal_web*
-/types
+/rs_lib/target
+/src/img2tempdecal_web*
+/.vite

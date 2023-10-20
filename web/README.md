@@ -6,21 +6,23 @@ Image tempdecal.wad converter running in a web browser.
 Build Requirements
 ----------------
 
- * [pnpm](https://pnpm.io/)
- * [wasm-bindgen](https://github.com/rustwasm/wasm-bindgen)
+ * [Deno](https://deno.com/)
+ * [Rust](https://www.rust-lang.com/)
+ * [wasm-bindgen](https://github.com/rustwasm/wasm-bindgen/)
+ * [wasm-opt (by binaryen)](https://github.com/WebAssembly/binaryen/)
 
 Build
 ----------------
 
 ```
 # Development build
-pnpm run dev
+deno task dev
 
-# Production build (output in 'dist')
-pnpm run build
+# Production build (output into 'dist')
+deno task build
 
-# Preview final output
-pnpm exec vite preview
+# Preview production build output
+deno task preview
 ```
 
 License

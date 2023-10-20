@@ -1,4 +1,4 @@
-// This software is in the public domain.
+// This code is in the public domain.
 
 use img2tempdecal::*;
 use std::io::Cursor;
@@ -6,24 +6,24 @@ use wasm_bindgen::prelude::*;
 
 #[wasm_bindgen]
 pub fn convert(
+    dst: &mut [u8],
     texture: &[u8],
     width: usize,
     height: usize,
-    out_larger_size: bool,
+    larger_size: bool,
     use_point_resample: bool,
-    dst: &mut [u8],
 ) -> usize {
     set_panic_hook();
 
     convert_texture_to_tempdecal(
-        &texture,
+        &mut Cursor::new(dst),
+        texture.as_rgba(),
         width,
         height,
-        out_larger_size,
+        larger_size,
         use_point_resample,
-        &mut Cursor::new(dst),
     )
-    .expect("Should not fail to write result. Maybe out of memory?")
+    .expect("Should not fail to convert texture. Maybe out of memory?")
 }
 
 fn set_panic_hook() {
