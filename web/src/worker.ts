@@ -24,7 +24,6 @@ globalThis.onmessage = async (ev: MessageEvent) => {
 		new Uint8Array(ev.data.buf),
 		ev.data.width,
 		ev.data.height,
-		ev.data.larger_size,
 		ev.data.use_point_resample,
 	);
 

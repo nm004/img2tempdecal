@@ -9,7 +9,7 @@ Build Requirements
  * [Deno](https://deno.com/)
  * [Rust](https://www.rust-lang.com/)
  * [wasm-bindgen](https://github.com/rustwasm/wasm-bindgen/)
- * [wasm-opt (by binaryen)](https://github.com/WebAssembly/binaryen/)
+ * [wasm-opt (from binaryen)](https://github.com/WebAssembly/binaryen/)
 
 Build
 ----------------

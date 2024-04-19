@@ -10,7 +10,6 @@ pub fn convert(
     texture: &[u8],
     width: usize,
     height: usize,
-    larger_size: bool,
     use_point_resample: bool,
 ) -> usize {
     set_panic_hook();
@@ -20,7 +19,6 @@ pub fn convert(
         texture.as_rgba(),
         width,
         height,
-        larger_size,
         use_point_resample,
     )
     .expect("Should not fail to convert texture. Maybe out of memory?")

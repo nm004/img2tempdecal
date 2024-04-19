@@ -1,6 +1,6 @@
 // This code is in the public domain.
 
-import { VitePWA } from 'npm:vite-plugin-pwa@0.16.5'
+import { VitePWA } from 'vite-plugin-pwa'
 
 export default {
 	server: {
