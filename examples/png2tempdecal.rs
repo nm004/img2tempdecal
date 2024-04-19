@@ -15,9 +15,6 @@ struct Cli {
     #[clap(value_parser, short, help = "Output file name")]
     output: Option<PathBuf>,
 
-    #[clap(value_parser, short, help = "Larger size tempdecal for Sven Co-op")]
-    large: bool,
-
     #[clap(value_parser, short, help = "Use point resampling")]
     point_resample: bool,
 }
@@ -37,9 +34,9 @@ fn main() {
     if let Some(o) = cli.output {
         let file = File::create(o);
         let mut file = file.expect("Failed to open output file.");
-        convert_texture_to_tempdecal(&mut file, img, w, h, cli.large, cli.point_resample)
+        convert_texture_to_tempdecal(&mut file, img, w, h, cli.point_resample)
     } else {
-        convert_texture_to_tempdecal(&mut io::stdout(), img, w, h, cli.large, cli.point_resample)
+        convert_texture_to_tempdecal(&mut io::stdout(), img, w, h, cli.point_resample)
     }
     .expect("Error occured while writing tempdecal.");
 }

@@ -1,6 +1,5 @@
 // This code is in the public domain.
 
-const largerSizeSwitch = document.getElementById('larger-size-switch') as HTMLInputElement;
 const pointResampleSwitch = document.getElementById('point-resample-switch') as HTMLInputElement;
 const imgDropzone = document.getElementById('img-dropzone') as HTMLElement;
 const imgInput = document.getElementById('img-input') as HTMLInputElement;
@@ -8,7 +7,6 @@ const statusMsg = document.getElementById('status-msg') as HTMLElement;
 
 const convert = async (
 	imgSource: Blob | HTMLImageElement | ImageData | ImageBitmap,
-	larger_size: boolean,
 	use_point_resample: boolean
 ): Promise<Blob> => {
 	const imgBmp = await createImageBitmap(imgSource);
@@ -27,7 +25,6 @@ const convert = async (
 		buf: imgRaw.data.buffer,
 		width: imgRaw.width,
 		height: imgRaw.height,
-		larger_size,
 		use_point_resample,
 	}
 	const p = new Promise<Blob>((resolve, reject) =>
@@ -65,7 +62,7 @@ const handle_convert_request = async (file: File) => {
 
 	let blob;
 	try {
-		blob = await convert(file, largerSizeSwitch.checked, pointResampleSwitch.checked);
+		blob = await convert(file, pointResampleSwitch.checked);
 	} catch (e) {
 		console.error(e);
 		set_status_msg('ng', `✗ <strong>Oops</strong>, failed to convert ${fn.outerHTML}, sorry.`);

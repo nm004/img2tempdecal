@@ -1,12 +1,12 @@
 {
 	"tasks": {
-		"cargo": "cargo build --target wasm32-unknown-unknown --manifest-path rs_lib/Cargo.toml --profile $cargoprof",
-		"wasm-bindgen": "deno task cargo && wasm-bindgen --target web --out-dir src rs_lib/target/wasm32-unknown-unknown/$rsliboutdir/img2tempdecal_web.wasm",
+		"cargo": "cargo build --target wasm32-unknown-unknown --manifest-path rs_lib/Cargo.toml --profile $cargo_prof",
+		"wasm-bindgen": "deno task cargo && wasm-bindgen --target web --out-dir src rs_lib/target/wasm32-unknown-unknown/$rs_lib_outdir/img2tempdecal_web.wasm",
 		"wasm-opt": "wasm-opt -O -o src/img2tempdecal_web_bg.wasm src/img2tempdecal_web_bg.wasm",
-		"vite": "deno cache --node-modules-dir src/**/*.ts && deno run -A --no-lock npm:vite@4.5.0",
-		"dev": "export cargoprof=dev; export rsliboutdir=debug; deno task wasm-bindgen && deno task vite",
-		"build": "export cargoprof=release; export rsliboutdir=release; deno task wasm-bindgen && deno task wasm-opt && deno check src/**/*.ts && deno task vite build",
-		"preview": "deno run -A --no-lock npm:vite preview",
+		"vite": "deno cache --node-modules-dir src/**/*.ts && deno run -A --no-lock npm:vite",
+		"dev": "export cargo_prof=dev; export rs_lib_outdir=debug; deno task wasm-bindgen && deno task vite",
+		"build": "export cargo_prof=release; export rs_lib_outdir=release; deno task wasm-bindgen && deno task wasm-opt && deno check src/**/*.ts && deno task vite build",
+		"preview": "deno task vite preview",
 		"clean": "rm -Rf dist node_modules src/img2tempdecal_web* rs_lib/target .vite"
 	},
 	"compilerOptions": {
@@ -14,7 +14,8 @@
 	},
 	"exclude": ["src/img2tempdecal_web*"],
 	"imports": {
-		"@patternfly/elements/": "npm:/@patternfly/elements@2.4.0/",
-		"workbox-precaching": "npm:/workbox-precaching@7.0.0"
+		"@patternfly/elements/": "npm:/@patternfly/elements@3.0.1/",
+		"workbox-precaching": "npm:workbox-precaching@7.0.0",
+		"vite-plugin-pwa": "npm:vite-plugin-pwa@0.19.8"
 	}
 }

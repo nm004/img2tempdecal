@@ -17,12 +17,14 @@ dt {
 }
 
 form.switch-with-label {
+	cursor: pointer;
 	padding-block-start: 0.62rem;
 }
 
 form.switch-with-label > label {
 	cursor: pointer;
 	padding-inline: 0.38ex;
+	vertical-align: top;
 }
 
 #img-input {

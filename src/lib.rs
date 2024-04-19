@@ -17,12 +17,11 @@ pub fn convert_texture_to_tempdecal(
     texture: &[RGBA8],
     width: usize,
     height: usize,
-    larger_size: bool,
     use_point_resample: bool,
 ) -> Result<usize, io::Error> {
     let (texture, width, height) = extend_to_m16(texture, width, height);
     let (texture, width, height) =
-        resize_to_fit_into_tempdecal(&texture, width, height, larger_size, use_point_resample);
+        resize_to_fit_into_tempdecal(&texture, width, height, use_point_resample);
     let (texture, palette) = remap_to_wad_texture(&texture, width, height);
     save_as_tempdecal(write, &texture, width, height, &palette)
 }
@@ -74,18 +73,14 @@ fn extend_to_m16(texture: &[RGBA8], width: usize, height: usize) -> (Box<[RGBA8]
 }
 
 /// This resizes a given texture to fit into tempdecal.
-/// If larger_size is true, the resulting texture can be bigger,
-/// but it is only valid for Sven Co-op.
 fn resize_to_fit_into_tempdecal(
     texture: &[RGBA8],
     width: usize,
     height: usize,
-    larger_size: bool,
     use_point_resample: bool,
 ) -> (Box<[RGBA8]>, usize, usize) {
     // Ref. https://www.the303.org/tutorials/goldsrcspraylogo.html
-    let size_sup = if larger_size { 14336 + 1 } else { 12288 };
-
+    let size_sup = 14337;
     let (nw, nh) = calc_optimal_size(width, height, size_sup);
     if (nw, nh) == (width, height) {
         return (texture.into(), width, height);
