@@ -1,7 +1,6 @@
 // This code is in the public domain.
 
 use img2tempdecal::*;
-use std::io::Cursor;
 use wasm_bindgen::prelude::*;
 
 #[wasm_bindgen]
@@ -14,17 +13,18 @@ pub fn convert(
 ) -> usize {
     set_panic_hook();
 
-    convert_texture_to_tempdecal(
-        &mut Cursor::new(dst),
-        texture.as_rgba(),
+    let data = convert_texture_to_tempdecal(
+        texture,
         width,
         height,
         use_point_resample,
-    )
-    .expect("Should not fail to convert texture. Maybe out of memory?")
+    );
+    let n = data.len();
+    dst[..n].copy_from_slice(&data);
+    n
 }
 
-fn set_panic_hook() {
+const fn set_panic_hook() {
     // When the `console_error_panic_hook` feature is enabled, we can call the
     // `set_panic_hook` function at least once during initialization, and then
     // we will get better error messages if our code ever panics.
