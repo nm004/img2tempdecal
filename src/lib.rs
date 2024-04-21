@@ -1,75 +1,20 @@
 // This code is in the public domain.
 
-pub use rgb::{FromSlice, RGBA8};
-
 use imagequant::Histogram;
-use rgb::ComponentBytes;
-use std::io::{self, Write};
-use std::iter::{repeat, zip};
-use std::mem::{size_of, size_of_val};
-
-const PALETTE_COUNT: u16 = 256;
+use rgb::{FromSlice, ComponentBytes, RGB8, RGBA8};
 
 /// This converts the given texture into tempdecal.wad by calling the subsequent functions.
 /// Texture must be raw RGBA8 format. This is an entry point of this library.
 pub fn convert_texture_to_tempdecal(
-    write: &mut impl Write,
-    texture: &[RGBA8],
+    texture: &[u8],
     width: usize,
     height: usize,
     use_point_resample: bool,
-) -> Result<usize, io::Error> {
-    let (texture, width, height) = extend_to_m16(texture, width, height);
-    let (texture, width, height) =
-        resize_to_fit_into_tempdecal(&texture, width, height, use_point_resample);
-    let (texture, palette) = remap_to_wad_texture(&texture, width, height);
-    save_as_tempdecal(write, &texture, width, height, &palette)
-}
-
-/// This extends an input texture. The resulting width and height are multiples of 16.
-/// Padded pixels are copied from the edge of an original texture, but their alpha channel
-/// is 0. By doing so, undesirable aliasing on the edges can be avoided during resizing.
-fn extend_to_m16(texture: &[RGBA8], width: usize, height: usize) -> (Box<[RGBA8]>, usize, usize) {
-    let (pad_x, pad_y) = (width % 16, height % 16);
-    if (pad_x, pad_y) == (0, 0) {
-        return (texture.into(), width, height);
-    }
-    let (nw, nh) = (width + pad_x, height + pad_y);
-    let mut ntxt = vec![RGBA8::new(0, 0, 0, 0); nw * nh].into_boxed_slice();
-    let (dx, dy) = (pad_x / 2, pad_y / 2);
-
-    let nt_rows = ntxt.chunks_exact_mut(nw).skip(dy);
-    let t_rows = texture.chunks_exact(width);
-    for (nr, r) in nt_rows.zip(t_rows) {
-        nr[dx..dx + width].copy_from_slice(r);
-    }
-
-    if pad_x != 0 {
-        for nr in ntxt.chunks_exact_mut(nw) {
-            let a = nr[dx];
-            let b = nr[nw - (pad_x - dx)];
-            nr[..dx].fill(RGBA8::new(a.r, a.g, a.b, 0));
-            nr[nw - dx..].fill(RGBA8::new(b.r, b.g, b.b, 0));
-        }
-    }
-
-    if pad_y != 0 {
-        let r = &ntxt[dy * nw..(dy + 1) * nw]
-            .iter()
-            .map(|x| RGBA8::new(x.r, x.g, x.b, 0))
-            .collect::<Vec<_>>();
-        for nr in ntxt[..dy * nw].chunks_exact_mut(nw) {
-            nr.copy_from_slice(&r);
-        }
-        let r = &ntxt[nw * nh - (pad_y - dy + 1) * nw..nw * nh - (pad_y - dy) * nw]
-            .iter()
-            .map(|x| RGBA8::new(x.r, x.g, x.b, 0))
-            .collect::<Vec<_>>();
-        for nr in ntxt[nw * nh - dy * nw..].chunks_exact_mut(nw) {
-            nr.copy_from_slice(&r);
-        }
-    }
-    (ntxt, nw, nh)
+) -> Vec<u8> {
+    let (texture, width, height)
+	= resize_to_fit_into_tempdecal(texture.as_rgba(), width, height, use_point_resample);
+    let (palette, index_map) = remap_to_indexed_color(&texture, width, height);
+    make_tempdecal(&palette, &index_map, width, height)
 }
 
 /// This resizes a given texture to fit into tempdecal.
@@ -78,204 +23,278 @@ fn resize_to_fit_into_tempdecal(
     width: usize,
     height: usize,
     use_point_resample: bool,
-) -> (Box<[RGBA8]>, usize, usize) {
-    // Ref. https://www.the303.org/tutorials/goldsrcspraylogo.html
-    let size_sup = 14337;
-    let (nw, nh) = calc_optimal_size(width, height, size_sup);
-    if (nw, nh) == (width, height) {
-        return (texture.into(), width, height);
-    }
+) -> (Vec<RGBA8>, usize, usize) {
+    // First, we extend an input texture. The resulting width and height are multiples of 16.
+    // Padded pixels are copied from the edge of an original texture, but their alpha channel
+    // is 0. By doing so, undesirable resizing aliasing on the edges can be avoided.
+    let (pad_x, pad_y) = ((16 - (width % 16)) % 16  , (16 - (height % 16)) % 16);
 
-    let mut ntxt = vec![RGBA8::new(0, 0, 0xff, 0); nw * nh].into_boxed_slice();
-    let mut resizer = resize::new(
-        width,
-        height,
-        nw,
-        nh,
-        resize::Pixel::RGBA8,
-        if use_point_resample {
-            resize::Type::Point
-        } else {
-            resize::Type::Lanczos3
-        },
-    )
-    .unwrap();
-    resizer.resize(texture, &mut ntxt).unwrap();
+    let (texture, width, height) = if (pad_x, pad_y) == (0, 0) {
+	(texture.into(), width, height)
+    } else {
+	let (w1, h1) = (width + pad_x, height + pad_y);
+	let mut texture1 = vec![RGBA8::new(0, 0, 0, 0); w1 * h1];
+	let (dx, dy) = (pad_x / 2, pad_y / 2);
 
-    denoise(&mut ntxt);
+	// This copies original textures
+	let rows0 = texture.chunks_exact(width);
+	let rows1 = texture1.chunks_exact_mut(w1).skip(dy).take(height);
+	for (r0, r1) in rows0.zip(rows1) {
+            r1[dx..(dx + width)].copy_from_slice(r0);
+	}
 
-    (ntxt, nw, nh)
+	// The following code fills padded pixels with edge pixels.
+	// Assume that the following diagram, where 5 is the
+	// original texture area, and other areas are padded pixels.
+	// 1 2 3
+	// 4 5 6
+	// 7 8 9
+	// Left and right (4 and 6)
+	if pad_x != 0 {
+            for r in texture1.chunks_exact_mut(w1) {
+		let a = r[dx];
+		let b = r[w1 - (pad_x - dx)];
+		r[..dx].fill(RGBA8::new(a.r, a.g, a.b, 0));
+		r[(w1 - dx)..].fill(RGBA8::new(b.r, b.g, b.b, 0));
+            }
+	}
+
+	// Top and bottom (1,2,3, and 7,8,9)
+	if pad_y != 0 {
+            let r0: Box<_> = texture1[dy * w1..(dy + 1) * w1].into_iter()
+		.map(|x| RGBA8::new(x.r, x.g, x.b, 0))
+		.collect();
+            for r in texture1[..w1 * dy].chunks_exact_mut(w1) {
+		r.copy_from_slice(&r0);
+            }
+            let r0: Box<_> = texture1[(w1 * (dy + height - 1))..(w1 * (dy + height))].into_iter()
+		.map(|x| RGBA8::new(x.r, x.g, x.b, 0))
+		.collect();
+            for r in texture1[w1 * (dy + height)..].chunks_exact_mut(w1) {
+		r.copy_from_slice(&r0);
+            }
+	}
+        (texture1, w1, h1)
+    };
+
+    // If it already fits to tempdecal we do nothing here, or
+    // we resize it.
+    let (texture, width, height) = if width * height < 14337 {
+        (texture.into(), width, height)
+    } else {
+	// Ref. https://www.the303.org/tutorials/goldsrcspraylogo.html
+	const RATIO_TABLE: &[f64] = &[
+	    16./ 16.,  16./ 32.,  16./ 48.,  16./ 64.,  16./ 80.,  16./ 96.,  16./112.,  16./128.,
+	    16./144.,  16./160.,  16./176.,  16./192.,  16./208.,  16./224.,  16./240.,  16./256.,
+
+	    32./ 16.,  32./ 32.,  32./ 48.,  32./ 64.,  32./ 80.,  32./ 96.,  32./112.,  32./128.,
+	    32./144.,  32./160.,  32./176.,  32./192.,  32./208.,  32./224.,  32./240.,  32./256.,
+
+	    48./ 16.,  48./ 32.,  48./ 48.,  48./ 64.,  48./ 80.,  48./ 96.,  48./112.,  48./128.,
+	    48./144.,  48./160.,  48./176.,  48./192.,  48./208.,  48./224.,  48./240.,  48./256.,
+
+	    64./ 16.,  64./ 32.,  64./ 48.,  64./ 64.,  64./ 80.,  64./ 96.,  64./112.,  64./128.,
+	    64./144.,  64./160.,  64./176.,  64./192.,  64./208.,  64./224.,  f64::NAN,  f64::NAN,
+
+	    80./ 16.,  80./ 32.,  80./ 48.,  80./ 64.,  80./ 80.,  80./ 96.,  80./112.,  80./128.,
+	    80./144.,  80./160.,  80./176.,  f64::NAN,  f64::NAN,  f64::NAN,  f64::NAN,  f64::NAN,
+
+	    96./ 16.,  96./ 32.,  96./ 48.,  96./ 64.,  96./ 80.,  96./ 96.,  96./112.,  96./128.,
+	    96./144.,  f64::NAN,  f64::NAN,  f64::NAN,  f64::NAN,  f64::NAN,  f64::NAN,  f64::NAN,
+
+	    112./ 16., 112./ 32., 112./ 48., 112./ 64., 112./ 80., 112./ 96., 112./112., 112./128.,
+	    f64::NAN,  f64::NAN,  f64::NAN,  f64::NAN,  f64::NAN,  f64::NAN,  f64::NAN,  f64::NAN,
+
+	    128./ 16., 128./ 32., 128./ 48., 128./ 64., 128./ 80., 128./ 96., 128./112., f64::NAN,
+	    f64::NAN,  f64::NAN,  f64::NAN,  f64::NAN,  f64::NAN,  f64::NAN,  f64::NAN,  f64::NAN,
+
+	    144./ 16., 144./ 32., 144./ 48., 144./ 64., 144./ 80., 144./ 96., f64::NAN,  f64::NAN,
+	    f64::NAN,  f64::NAN,  f64::NAN,  f64::NAN,  f64::NAN,  f64::NAN,  f64::NAN,  f64::NAN,
+
+	    160./ 16., 160./ 32., 160./ 48., 160./ 64., 160./ 80., f64::NAN,  f64::NAN,  f64::NAN,
+	    f64::NAN,  f64::NAN,  f64::NAN,  f64::NAN,  f64::NAN,  f64::NAN,  f64::NAN,  f64::NAN,
+
+	    176./ 16., 176./ 32., 176./ 48., 176./ 64., 176./ 80., f64::NAN,  f64::NAN,  f64::NAN,
+	    f64::NAN,  f64::NAN,  f64::NAN,  f64::NAN,  f64::NAN,  f64::NAN,  f64::NAN,  f64::NAN,
+
+	    192./ 16., 192./ 32., 192./ 48., 192./ 64., f64::NAN,  f64::NAN,  f64::NAN,  f64::NAN,
+	    f64::NAN,  f64::NAN,  f64::NAN,  f64::NAN,  f64::NAN,  f64::NAN,  f64::NAN,  f64::NAN,
+
+	    208./ 16., 208./ 32., 208./ 48., 208./ 64., f64::NAN,  f64::NAN,  f64::NAN,  f64::NAN,
+	    f64::NAN,  f64::NAN,  f64::NAN,  f64::NAN,  f64::NAN,  f64::NAN,  f64::NAN,  f64::NAN,
+
+	    224./ 16., 224./ 32., 224./ 48., 224./ 64., f64::NAN,  f64::NAN,  f64::NAN,  f64::NAN,
+	    f64::NAN,  f64::NAN,  f64::NAN,  f64::NAN,  f64::NAN,  f64::NAN,  f64::NAN,  f64::NAN,
+
+	    240./ 16., 240./ 32., 240./ 48., f64::NAN,  f64::NAN,  f64::NAN,  f64::NAN,  f64::NAN,
+	    f64::NAN,  f64::NAN,  f64::NAN,  f64::NAN,  f64::NAN,  f64::NAN,  f64::NAN,  f64::NAN,
+
+	    256./ 16., 256./ 32., 256./ 48., f64::NAN,  f64::NAN,  f64::NAN,  f64::NAN,  f64::NAN,
+	    f64::NAN,  f64::NAN,  f64::NAN,  f64::NAN,  f64::NAN,  f64::NAN,  f64::NAN,  f64::NAN,
+	];
+	// This finds the biggest and most similar width and height from RATIO_TABLE.
+	let r = width as f64 / height as f64;
+	let i = RATIO_TABLE.into_iter().enumerate().fold((0xff, f64::NAN), |x, y| {
+	    if y.1.is_nan() {
+		return x
+	    }
+	    let z = (y.1 - r).abs();
+	    if x.1 < z {
+		x
+	    } else if x.1 == z {
+		if x.0 < y.0 {
+		    (y.0, z)
+		} else {
+		    x
+		}
+	    } else {
+		(y.0, z)
+	    }
+	}).0;
+
+	let w1 = ((i / 16) + 1) * 16;
+	let h1 = ((i % 16) + 1) * 16;
+
+	let mut texture1 = vec![RGBA8::new(0, 0, 0xff, 0); w1 * h1];
+	let mut resizer = resize::new(
+            width,
+            height,
+            w1,
+            h1,
+            resize::Pixel::RGBA8,
+            if use_point_resample {
+		resize::Type::Point
+            } else {
+		resize::Type::Lanczos3
+            },
+	).unwrap();
+	resizer.resize(&texture, &mut texture1).unwrap();
+
+	// This makes each color fully opaque if its opacity is above 50%,
+	// otherwise makes it fully transparent. It is especially needed for images that
+	// uses transparency color gradient to avoid an undesirable quantization result.
+	for i in texture1.iter_mut() {
+	    i.a = i.a / 0x80 * 0xff
+	}
+
+	(texture1, w1, h1)
+    };
+
+    (texture, width, height)
 }
 
-/// This finds biggest and similar texture size that fits into tempdecal.wad.
-fn calc_optimal_size(width: usize, height: usize, size_sup: usize) -> (usize, usize) {
-    if (width % 16, height % 16) == (0, 0) && width * height < size_sup {
-        return (width, height);
-    }
-
-    let wh_r = width as f64 / height as f64;
-    let r = (16..256 + 1).step_by(16);
-    const COUNT: usize = 256 / 16;
-    // 16, 32, 48, ..., 224, 240, 256, 16, 32, ..., 240, 256
-    let w: Box<_> = repeat(r.clone()).take(COUNT).flatten().collect();
-    // 16, 16, 16, ..., 16, 16, 16, 32, 32..., 256, 256
-    let h: Box<_> = r.map(|i| [i; COUNT]).flatten().collect();
-
-    let (i, _) = zip(w.iter(), h.iter())
-        .map(|c| {
-            let (nw, nh) = (*c.0, *c.1);
-            let nwh_r = nw as f64 / nh as f64;
-            let ceil_max = ((nw * nh / size_sup) as f64) * f64::MAX;
-
-            (nwh_r - wh_r).abs() + ceil_max
-        })
-        .enumerate()
-        .reduce(|a, b| if a.1 < b.1 { a } else { b })
-        .unwrap();
-
-    (w[i], h[i])
-}
-
-/// This creates indexed color texture and its palette.
-fn remap_to_wad_texture(
+/// This creates indexed color map
+fn remap_to_indexed_color(
     texture: &[RGBA8],
     width: usize,
     height: usize,
-) -> (Box<[u8]>, [u8; (PALETTE_COUNT as usize) * 3]) {
-    // First, let's set quantization parameters.
-    let mut liq = imagequant::new();
-    liq.set_speed(1).unwrap();
-    liq.set_last_index_transparent(true);
+) -> ([RGB8; 256], Vec<u8>) {
+    // First, we set quantization parameters.
+    let mut iq = imagequant::new();
+    iq.set_last_index_transparent(true);
+    let mut img = iq.new_image_borrowed(&texture, width, height, 0.0).unwrap();
 
-    let mut hist = Histogram::new(&liq);
-    hist.add_fixed_color(imagequant::RGBA::new(0, 0, 0xff, 0), 0.0)
-        .unwrap();
+    let mut hist = Histogram::new(&iq);
+    hist.add_image(&iq, &mut img).unwrap();
 
-    let mut img = liq
-        .new_image_borrowed(&texture, width, height, 0.0)
-        .unwrap();
-    hist.add_image(&liq, &mut img).unwrap();
+    // Now, let's do the job.
+    let mut r = hist.quantize(&iq).unwrap();
+    r.set_dithering_level(1.0).unwrap();
 
-    // Do quantize.
-    let mut res = hist.quantize(&liq).unwrap();
-    res.set_dithering_level(1.0).unwrap();
+    // This gets indexed color map and its palette.
+    let (rgba_palette, mut index_map) = r.remapped(&mut img).unwrap();
 
-    // Get indexed color mips and a palette.
-    let (mut palette, mips0) = res.remapped(&mut img).unwrap();
-    let mut mips0 = mips0.into_boxed_slice();
-
-    denoise(&mut palette);
-
-    // If a pixel refers to transparent color, then make it refer to 0xff.
-    for p in mips0.iter_mut() {
-        *p = if palette[*p as usize].a == 0 {
+    // This makes each pixel refer to the last index if it refers to transparent color.
+    for p in index_map.iter_mut() {
+        *p = if rgba_palette[*p as usize].a == 0 {
             0xff
         } else {
             *p
         };
     }
 
-    // from [RGBA] to [RGB]
-    let mut palette: Vec<_> = palette.into_iter().map(|c| c.rgb()).collect();
-
-    // Palette size must be 256.
-    palette.resize(256, [0, 0, 0xff].into());
-
-    // Texture is masked if last (0xff) color is 0x0000ff (pure blue).
-    *palette.last_mut().unwrap() = [0, 0, 0xff].into();
-
-    let palette: [u8; 256 * 3] = palette.as_bytes().try_into().unwrap();
-
-    (mips0, palette)
+    // This makes a RGB pallet
+    let mut rgb_palette: [RGB8; 256]
+	= [RGB8 {r:0, g:0, b:0}; 256];
+    let n = rgba_palette.len();
+    let p: Box<_> = rgba_palette.into_iter().map(|c| c.rgb()).collect();
+    rgb_palette[..n].copy_from_slice(&p);
+    // Last index is for transparent color.
+    *rgb_palette.last_mut().unwrap() = RGB8 {r:0, g:0, b:0xff};
+    (rgb_palette, index_map)
 }
 
-/// This makes alpha channel of each pixels 0xff
-/// if it is above or equal to the half of the maximum value.
-fn denoise(pixels: &mut [RGBA8]) {
-    for i in pixels.iter_mut() {
-        i.a = i.a / 0x80 * 0xff
-    }
-}
-
-/// This writes tempdecal.wad with the `write` object.
-/// Only most primary mipmap (i.e. mips0) is used,
-/// whereas other mips are filled with 0xff.
-fn save_as_tempdecal<'a>(
-    write: &mut impl Write,
-    mips0: &'a [u8],
+/// This makes tempdecal.wad from the given indexed color map.
+/// Only primary mipmap is used, and other mips are filled with 0.
+fn make_tempdecal<'a>(
+    palette: &'a [RGB8; 256],
+    index_map: &'a [u8],
     width: usize,
     height: usize,
-    palette: &'a [u8; (PALETTE_COUNT as usize) * 3],
-) -> Result<usize, io::Error> {
-    type Magic = [u8; 4];
-    type Name = [u8; 16];
-    const MAGIC: &Magic = b"WAD3";
-    let name: &Name = b"{LOGO\0\0\0\0\0\0\0\0\0\0\0";
-    let w: u32 = width as u32;
-    let h: u32 = height as u32;
-    let m0size = w*h;
-    let m1size = m0size / 4;
-    let m2size = m0size / 16;
-    let m3size = m0size / 64;
-    let o0: u32 = 40;
-    let o1: u32 = o0 + m0size;
-    let o2: u32 = o1 + m1size;
-    let o3: u32 = o2 + m2size;
-    let mips1: &[u8] = &vec![0xff; m1size as usize];
-    let mips2: &[u8] = &vec![0xff; m2size as usize];
-    let mips3: &[u8] = &vec![0xff; m3size as usize];
-    let header_size: u32 = (size_of::<Magic>() + size_of::<u32>() + size_of::<u32>()) as u32;
-    let texture_size: u32 = (size_of::<Name>()
-        + size_of::<u32>()
-        + size_of::<u32>()
-        + size_of::<u32>()
-        + size_of::<u32>()
-        + size_of::<u32>()
-        + size_of::<u32>()
-        + size_of_val(mips0)
-        + size_of_val(mips1)
-        + size_of_val(mips2)
-        + size_of_val(mips3)
-        + size_of::<u16>()
-        + size_of::<[u8; 3 * PALETTE_COUNT as usize]>() // R, G, B
-        + size_of::<[u8; 2]>()) as u32;
-    let dir_entry_size: u32 = (size_of::<u32>()
-        + size_of::<u32>()
-        + size_of::<u32>()
-        + size_of::<u8>()
-        + size_of::<u8>()
-        + size_of::<[u8; 2]>()
-        + size_of::<Name>()) as u32;
+) -> Vec<u8> {
+    const NAME: &[u8; 16] = b"{LOGO\0\0\0\0\0\0\0\0\0\0\0";
+    let m0size = width * height;
+    let m1size = width * height / 4;
+    let m2size = width * height / 16;
+    let m3size = width * height / 64;
+    // texture_header + mips + palette_count + palette
+    let texture_size = 0x30 + m0size + m1size + m2size + m3size + 2 + 0x300;
+    let texture_size_aligned = texture_size + (16 - texture_size % 16) % 16;
 
-    // header
-    write.write_all(MAGIC)?;
-    write.write_all(&1u32.to_le_bytes())?;
-    write.write_all(&(header_size + texture_size).to_le_bytes())?; // offset to directory
+    [
+	// Header
 
-    // texture
-    write.write_all(name)?;
-    write.write_all(&w.to_le_bytes())?;
-    write.write_all(&h.to_le_bytes())?;
-    write.write_all(&o0.to_le_bytes())?; // offset from begining of texture
-    write.write_all(&o1.to_le_bytes())?;
-    write.write_all(&o2.to_le_bytes())?;
-    write.write_all(&o3.to_le_bytes())?;
-    write.write_all(mips0)?; // mipmap data
-    write.write_all(mips1)?;
-    write.write_all(mips2)?;
-    write.write_all(mips3)?;
-    write.write_all(&PALETTE_COUNT.to_le_bytes())?; // always 256
-    write.write_all(palette)?;
-    write.write_all(&[0; 2])?; // padding
+	&b"WAD3"[..],
+	// count of directory entries
+	&1u32.to_le_bytes(),
+	// offset to directory
+	&(0x10 + texture_size_aligned as u32).to_le_bytes(),
+	// padding for alignment
+	&[0; 4],
 
-    // directory
-    write.write_all(&header_size.to_le_bytes())?; // offset to texture from the begining of WAD file
-    write.write_all(&texture_size.to_le_bytes())?; // compressed file size (same with file size in disk)
-    write.write_all(&texture_size.to_le_bytes())?; // file size in disk
-    write.write_all(&0x43u8.to_le_bytes())?; // data type is mipmap
-    write.write_all(&0u8.to_le_bytes())?; // use compression (always 0: never used)
-    write.write_all(&[0; 2])?; // padding
-    write.write_all(name)?;
+	// Texture
 
-    Ok((header_size + texture_size + dir_entry_size) as usize)
+	// name
+	NAME,
+	// width
+	&(width as u32).to_le_bytes(),
+	// height
+	&(height as u32).to_le_bytes(),
+	// mips offsets from the begining of texture
+	&0x30_u32.to_le_bytes(),
+	&(0x30 + (m0size) as u32).to_le_bytes(),
+	&(0x30 + (m0size + m1size) as u32).to_le_bytes(),
+	&(0x30 + (m0size + m1size + m2size) as u32).to_le_bytes(),
+	// padding for alignment
+	&[0; 8],
+	// mipmaps
+	&index_map,
+	&vec![0; m1size],
+	&vec![0; m2size],
+	&vec![0; m3size],
+	// count of colors in a palette (always 256)
+	&256_u16.to_le_bytes(),
+	// palette
+	palette.as_bytes(),
+	// padding
+	&vec![0; (16 - texture_size % 16) % 16],
+
+	// Directory
+
+	// offset to texture from the begining of WAD file
+	// (deader + directory)
+	&0x10u32.to_le_bytes(),
+	// compressed file size (same with file size in disk)
+	&(texture_size as u32).to_le_bytes(),
+	// file size in disk
+	&(texture_size as u32).to_le_bytes(),
+	// data type (0x43 == mipmap texture)
+	&[0x43],
+	// compression flag (0 == not used)
+	&[0],
+	// padding
+	&[0; 2],
+	// name
+	NAME,
+    ].concat()
 }
