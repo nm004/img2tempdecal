@@ -1,10 +1,13 @@
-// This code is in the public domain.
+/*
+ * This file is a part of img2tempdecal by Nozomi Miyamori.
+ * img2tempdecal is distributed under the MIT-0 license and the Public Domain.
+ */
 
 use img2tempdecal::*;
 use wasm_bindgen::prelude::*;
 
 #[wasm_bindgen]
-pub fn convert(
+pub async fn convert(
     dst: &mut [u8],
     texture: &[u8],
     width: usize,

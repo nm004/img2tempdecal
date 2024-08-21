@@ -1,4 +1,7 @@
-// This code is in the public domain.
+/*
+ * This file is a part of img2tempdecal by Nozomi Miyamori.
+ * img2tempdecal is distributed under the MIT-0 license and the Public Domain.
+ */
 
 use imagequant::Histogram;
 use rgb::{FromSlice, ComponentBytes, RGB8, RGBA8};
