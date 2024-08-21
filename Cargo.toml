@@ -1,13 +1,13 @@
 [package]
 name = "img2tempdecal"
-version = "4.0.0"
+version = "4.0.1"
 authors = ["Nozomi Miyamori"]
 edition = "2021"
 
 [dependencies]
-imagequant = { version = "4.3.0", default-features = false }
-rgb = "0.8.37"
-resize = "0.8.4"
+imagequant = { version = "4.3.3", default-features = false }
+rgb = "0.8.48"
+resize = "0.8.5"
 
 [dev-dependencies]
 gif = "0.13.1"
