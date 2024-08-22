@@ -7,7 +7,7 @@ use img2tempdecal::*;
 use wasm_bindgen::prelude::*;
 
 #[wasm_bindgen]
-pub async fn convert(
+pub fn convert(
     dst: &mut [u8],
     texture: &[u8],
     width: usize,
