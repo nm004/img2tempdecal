@@ -3,6 +3,7 @@
  * img2tempdecal is distributed under the MIT-0 license and the Public Domain.
  */
 
+use core::iter::{repeat, zip};
 use imagequant::Histogram;
 use rgb::{FromSlice, ComponentBytes, RGB8, RGBA8};
 
@@ -15,161 +16,81 @@ pub fn convert_texture_to_tempdecal(
     use_point_resample: bool,
 ) -> Vec<u8> {
     let (texture, width, height)
-	= resize_to_fit_into_tempdecal(texture.as_rgba(), width, height, use_point_resample);
+	= adjust_size(texture.as_rgba(), width, height, use_point_resample, 112 * 128 + 1);
     let (palette, index_map) = remap_to_indexed_color(&texture, width, height);
     make_tempdecal(&palette, &index_map, width, height)
 }
 
 /// This resizes a given texture to fit into tempdecal.
-fn resize_to_fit_into_tempdecal(
+fn adjust_size(
     texture: &[RGBA8],
     width: usize,
     height: usize,
     use_point_resample: bool,
+    size_limit: usize
 ) -> (Vec<RGBA8>, usize, usize) {
-    // First, we extend an input texture. The resulting width and height are multiples of 16.
-    // Padded pixels are copied from the edge of an original texture, but their alpha channel
-    // is 0. By doing so, undesirable resizing aliasing on the edges can be avoided.
-    let (pad_x, pad_y) = ((16 - (width % 16)) % 16  , (16 - (height % 16)) % 16);
+    let (rem_w, rem_h) = (width % 16, height % 16);
+    let (pad_w, pad_h) = ((16 - rem_w) % 16  , (16 - rem_h) % 16);
 
-    let (texture, width, height) = if (pad_x, pad_y) == (0, 0) {
+    if (rem_w, rem_h) == (0, 0) && width * height < size_limit {
 	(texture.into(), width, height)
-    } else {
-	let (w1, h1) = (width + pad_x, height + pad_y);
-	let mut texture1 = vec![RGBA8::new(0, 0, 0, 0); w1 * h1];
-	let (dx, dy) = (pad_x / 2, pad_y / 2);
+    } else if (width + pad_w) * (height + pad_h) < size_limit {
+	// We extend an input texture if it already fits to tempdecal but the both width
+	// and height are not multiples of 16. Padded pixels' alpha channel are 0.
+	let (w, h) = (width + pad_w, height + pad_h);
+	let (dx, dy) = (pad_w / 2, pad_h / 2);
+	let mut texture1 = vec![RGBA8::new(0, 0, 0, 0); w * h];
 
-	// This copies original textures
+	// Let's copy original textures.
 	let rows0 = texture.chunks_exact(width);
-	let rows1 = texture1.chunks_exact_mut(w1).skip(dy).take(height);
+	let rows1 = texture1.chunks_exact_mut(w).skip(dy).take(height);
 	for (r0, r1) in rows0.zip(rows1) {
-            r1[dx..(dx + width)].copy_from_slice(r0);
+	    r1[dx..(dx + width)].copy_from_slice(r0);
 	}
-
-	// The following code fills padded pixels with edge pixels.
-	// Assume that the following diagram, where 5 is the
-	// original texture area, and other areas are padded pixels.
-	// 1 2 3
-	// 4 5 6
-	// 7 8 9
-	// Left and right (4 and 6)
-	if pad_x != 0 {
-            for r in texture1.chunks_exact_mut(w1) {
-		let a = r[dx];
-		let b = r[w1 - (pad_x - dx)];
-		r[..dx].fill(RGBA8::new(a.r, a.g, a.b, 0));
-		r[(w1 - dx)..].fill(RGBA8::new(b.r, b.g, b.b, 0));
-            }
-	}
-
-	// Top and bottom (1,2,3, and 7,8,9)
-	if pad_y != 0 {
-            let r0: Box<_> = texture1[dy * w1..(dy + 1) * w1].into_iter()
-		.map(|x| RGBA8::new(x.r, x.g, x.b, 0))
-		.collect();
-            for r in texture1[..w1 * dy].chunks_exact_mut(w1) {
-		r.copy_from_slice(&r0);
-            }
-            let r0: Box<_> = texture1[(w1 * (dy + height - 1))..(w1 * (dy + height))].into_iter()
-		.map(|x| RGBA8::new(x.r, x.g, x.b, 0))
-		.collect();
-            for r in texture1[w1 * (dy + height)..].chunks_exact_mut(w1) {
-		r.copy_from_slice(&r0);
-            }
-	}
-        (texture1, w1, h1)
-    };
-
-    // If it already fits to tempdecal we do nothing here, or
-    // we resize it.
-    let (texture, width, height) = if width * height < 14337 {
-        (texture.into(), width, height)
+	(texture1, w, h)
     } else {
+	// We have to resize the texture.
+	//
+	// First, let's find the largest width and height that have the most similar
+	// aspect ratio that is acceptable for GoldSrc.
+
+	// We make the ratio table.
 	// Ref. https://www.the303.org/tutorials/goldsrcspraylogo.html
-	const RATIO_TABLE: &[f64] = &[
-	    16./ 16.,  16./ 32.,  16./ 48.,  16./ 64.,  16./ 80.,  16./ 96.,  16./112.,  16./128.,
-	    16./144.,  16./160.,  16./176.,  16./192.,  16./208.,  16./224.,  16./240.,  16./256.,
+	let r = (16..=256).step_by(16);
+	const N: usize = 256 / 16;
+	// 16, 32, ..., 256, 16, 32, ..., 256
+	let w: Box<_> = repeat(r.clone()).take(N).flatten().collect();
+	// 16, 16, ...,  16, 16, 32, ..., 256
+	let h: Box<_> = r.map(|i| [i; N]).flatten().collect();
 
-	    32./ 16.,  32./ 32.,  32./ 48.,  32./ 64.,  32./ 80.,  32./ 96.,  32./112.,  32./128.,
-	    32./144.,  32./160.,  32./176.,  32./192.,  32./208.,  32./224.,  32./240.,  32./256.,
+	let ratio = width as f64 / height as f64;
+	let (w, h, _) = zip(w.iter(), h.iter()).filter(|(&w, &h)| {
+	    w * h < size_limit
+	}).map(|(&w, &h)| {
+	    let r = w as f64 / h as f64;
+	    let r = r - ratio;
+	    (w, h, r * r)
 
-	    48./ 16.,  48./ 32.,  48./ 48.,  48./ 64.,  48./ 80.,  48./ 96.,  48./112.,  48./128.,
-	    48./144.,  48./160.,  48./176.,  48./192.,  48./208.,  48./224.,  48./240.,  48./256.,
+	// We do rev() because we want to maximize the width and the height.
+	// If several elements are equally minimum, the first element is returned (excerpt
+	// from the Rust doc).
+	}).rev().min_by(|x, y|
+	    x.2.partial_cmp(&y.2).unwrap()
+	).unwrap();
 
-	    64./ 16.,  64./ 32.,  64./ 48.,  64./ 64.,  64./ 80.,  64./ 96.,  64./112.,  64./128.,
-	    64./144.,  64./160.,  64./176.,  64./192.,  64./208.,  64./224.,  f64::NAN,  f64::NAN,
-
-	    80./ 16.,  80./ 32.,  80./ 48.,  80./ 64.,  80./ 80.,  80./ 96.,  80./112.,  80./128.,
-	    80./144.,  80./160.,  80./176.,  f64::NAN,  f64::NAN,  f64::NAN,  f64::NAN,  f64::NAN,
-
-	    96./ 16.,  96./ 32.,  96./ 48.,  96./ 64.,  96./ 80.,  96./ 96.,  96./112.,  96./128.,
-	    96./144.,  f64::NAN,  f64::NAN,  f64::NAN,  f64::NAN,  f64::NAN,  f64::NAN,  f64::NAN,
-
-	    112./ 16., 112./ 32., 112./ 48., 112./ 64., 112./ 80., 112./ 96., 112./112., 112./128.,
-	    f64::NAN,  f64::NAN,  f64::NAN,  f64::NAN,  f64::NAN,  f64::NAN,  f64::NAN,  f64::NAN,
-
-	    128./ 16., 128./ 32., 128./ 48., 128./ 64., 128./ 80., 128./ 96., 128./112., f64::NAN,
-	    f64::NAN,  f64::NAN,  f64::NAN,  f64::NAN,  f64::NAN,  f64::NAN,  f64::NAN,  f64::NAN,
-
-	    144./ 16., 144./ 32., 144./ 48., 144./ 64., 144./ 80., 144./ 96., f64::NAN,  f64::NAN,
-	    f64::NAN,  f64::NAN,  f64::NAN,  f64::NAN,  f64::NAN,  f64::NAN,  f64::NAN,  f64::NAN,
-
-	    160./ 16., 160./ 32., 160./ 48., 160./ 64., 160./ 80., f64::NAN,  f64::NAN,  f64::NAN,
-	    f64::NAN,  f64::NAN,  f64::NAN,  f64::NAN,  f64::NAN,  f64::NAN,  f64::NAN,  f64::NAN,
-
-	    176./ 16., 176./ 32., 176./ 48., 176./ 64., 176./ 80., f64::NAN,  f64::NAN,  f64::NAN,
-	    f64::NAN,  f64::NAN,  f64::NAN,  f64::NAN,  f64::NAN,  f64::NAN,  f64::NAN,  f64::NAN,
-
-	    192./ 16., 192./ 32., 192./ 48., 192./ 64., f64::NAN,  f64::NAN,  f64::NAN,  f64::NAN,
-	    f64::NAN,  f64::NAN,  f64::NAN,  f64::NAN,  f64::NAN,  f64::NAN,  f64::NAN,  f64::NAN,
-
-	    208./ 16., 208./ 32., 208./ 48., 208./ 64., f64::NAN,  f64::NAN,  f64::NAN,  f64::NAN,
-	    f64::NAN,  f64::NAN,  f64::NAN,  f64::NAN,  f64::NAN,  f64::NAN,  f64::NAN,  f64::NAN,
-
-	    224./ 16., 224./ 32., 224./ 48., 224./ 64., f64::NAN,  f64::NAN,  f64::NAN,  f64::NAN,
-	    f64::NAN,  f64::NAN,  f64::NAN,  f64::NAN,  f64::NAN,  f64::NAN,  f64::NAN,  f64::NAN,
-
-	    240./ 16., 240./ 32., 240./ 48., f64::NAN,  f64::NAN,  f64::NAN,  f64::NAN,  f64::NAN,
-	    f64::NAN,  f64::NAN,  f64::NAN,  f64::NAN,  f64::NAN,  f64::NAN,  f64::NAN,  f64::NAN,
-
-	    256./ 16., 256./ 32., 256./ 48., f64::NAN,  f64::NAN,  f64::NAN,  f64::NAN,  f64::NAN,
-	    f64::NAN,  f64::NAN,  f64::NAN,  f64::NAN,  f64::NAN,  f64::NAN,  f64::NAN,  f64::NAN,
-	];
-	// This finds the biggest and most similar width and height from RATIO_TABLE.
-	let r = width as f64 / height as f64;
-	let i = RATIO_TABLE.into_iter().enumerate().fold((0xff, f64::NAN), |x, y| {
-	    if y.1.is_nan() {
-		return x
-	    }
-	    let z = (y.1 - r).abs();
-	    if x.1 < z {
-		x
-	    } else if x.1 == z {
-		if x.0 < y.0 {
-		    (y.0, z)
-		} else {
-		    x
-		}
-	    } else {
-		(y.0, z)
-	    }
-	}).0;
-
-	let w1 = ((i / 16) + 1) * 16;
-	let h1 = ((i % 16) + 1) * 16;
-
-	let mut texture1 = vec![RGBA8::new(0, 0, 0xff, 0); w1 * h1];
+	// Let's do resize the texture.
+	let mut texture1 = vec![RGBA8::new(0, 0, 0xff, 0); w * h];
 	let mut resizer = resize::new(
-            width,
-            height,
-            w1,
-            h1,
-            resize::Pixel::RGBA8,
-            if use_point_resample {
+	    width,
+	    height,
+	    w,
+	    h,
+	    resize::Pixel::RGBA8,
+	    if use_point_resample {
 		resize::Type::Point
-            } else {
+	    } else {
 		resize::Type::Lanczos3
-            },
+	    },
 	).unwrap();
 	resizer.resize(&texture, &mut texture1).unwrap();
 
@@ -180,10 +101,8 @@ fn resize_to_fit_into_tempdecal(
 	    i.a = i.a / 0x80 * 0xff
 	}
 
-	(texture1, w1, h1)
-    };
-
-    (texture, width, height)
+	(texture1, w, h)
+    }
 }
 
 /// This creates indexed color map
@@ -217,8 +136,7 @@ fn remap_to_indexed_color(
     }
 
     // This makes a RGB pallet
-    let mut rgb_palette: [RGB8; 256]
-	= [RGB8 {r:0, g:0, b:0}; 256];
+    let mut rgb_palette: [RGB8; 256] = [RGB8 {r:0, g:0, b:0}; 256];
     let n = rgba_palette.len();
     let p: Box<_> = rgba_palette.into_iter().map(|c| c.rgb()).collect();
     rgb_palette[..n].copy_from_slice(&p);
@@ -240,7 +158,7 @@ fn make_tempdecal<'a>(
     let m1size = width * height / 4;
     let m2size = width * height / 16;
     let m3size = width * height / 64;
-    // texture_header + mips + palette_count + palette
+    // texture_size = texture_header + mips + palette_count + palette
     let texture_size = 0x30 + m0size + m1size + m2size + m3size + 2 + 0x300;
     let texture_size_aligned = texture_size + (16 - texture_size % 16) % 16;
 
