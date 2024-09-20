@@ -16,7 +16,8 @@ pub fn convert_texture_to_tempdecal(
     use_point_resample: bool,
 ) -> Vec<u8> {
     let (texture, width, height)
-	= adjust_size(texture.as_rgba(), width, height, use_point_resample, 112 * 128 + 1);
+	= adjust_size(texture.as_rgba(), width, height, use_point_resample,
+	    96 * 96, 112 * 128 + 1);
     let (palette, index_map) = remap_to_indexed_color(&texture, width, height);
     make_tempdecal(&palette, &index_map, width, height)
 }
@@ -27,14 +28,15 @@ fn adjust_size(
     width: usize,
     height: usize,
     use_point_resample: bool,
-    size_limit: usize
+    min_limit: usize,
+    max_limit: usize
 ) -> (Vec<RGBA8>, usize, usize) {
     let (rem_w, rem_h) = (width % 16, height % 16);
     let (pad_w, pad_h) = ((16 - rem_w) % 16  , (16 - rem_h) % 16);
 
-    if (rem_w, rem_h) == (0, 0) && width * height < size_limit {
+    if (rem_w, rem_h) == (0, 0) && width * height < max_limit {
 	(texture.into(), width, height)
-    } else if (width + pad_w) * (height + pad_h) < size_limit {
+    } else if (width + pad_w) * (height + pad_h) < max_limit {
 	// We extend an input texture if it already fits to tempdecal but the both width
 	// and height are not multiples of 16. Padded pixels' alpha channel are 0.
 	let (w, h) = (width + pad_w, height + pad_h);
@@ -65,7 +67,8 @@ fn adjust_size(
 
 	let ratio = width as f64 / height as f64;
 	let (w, h, _) = zip(w.iter(), h.iter()).filter(|(&w, &h)| {
-	    w * h < size_limit
+	    let s = w * h;
+	    min_limit < s && s < max_limit
 	}).map(|(&w, &h)| {
 	    let r = w as f64 / h as f64;
 	    let r = r - ratio;
