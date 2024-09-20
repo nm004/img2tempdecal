@@ -8,59 +8,45 @@ document.addEventListener('DOMContentLoaded', e => {
 	const statusMsg = document.getElementById('status-msg') as HTMLElement;
 
 	const worker = new Worker(new URL('./worker', import.meta.url), { type: 'module' });
-	const handleConvertRequest = (file: File) => {
-		statusMsg.className = '';
-		statusMsg.innerHTML = '';
-		const fileName = document.createElement('samp');
-		fileName.textContent = file.name;
 
+	let fileName: string;
+
+	worker.onerror = (e: Event) => {
+		console.error(e);
+		statusMsg.className = 'ng'
+		statusMsg.innerHTML = `✗ Failed to convert ${fileName}, sorry.`;
+	};
+
+	worker.onmessage = (e: Event) => {
+		statusMsg.className = 'ok';
+		statusMsg.innerHTML = `✓ Conversion completed! (${fileName})`;
+
+		// save tempdecal.wad
+		const { buffer, length } = (e as MessageEvent).data;
+		const a = document.createElement('a');
+		a.download = 'tempdecal.wad';
+		a.href = URL.createObjectURL(new Blob(
+			[new Uint8Array(buffer, 0, length)],
+			{ type: 'application/octet-stream' }
+		));
+		a.click();
+		URL.revokeObjectURL(a.href);
+	};
+
+	const handleConvertRequest = (file: File) => {
 		const spinner = document.createElement('pf-spinner');
 		spinner.setAttribute('size', 'md');
 		statusMsg.className = '';
-		statusMsg.innerHTML = `${spinner.outerHTML} Processing ${fileName.outerHTML}...`;
-
-		const onError = (e: Event) => {
-			worker.removeEventListener('message', onMessage);
-			console.error(e);
-			statusMsg.className = 'ng'
-			statusMsg.innerHTML = `✗ Failed to convert ${fileName.outerHTML}, sorry.`;
-		};
-
-		const onMessage = (e: Event) => {
-			worker.removeEventListener('error', onError);
-			statusMsg.className = 'ok';
-			statusMsg.innerHTML = `✓ Conversion completed! (${fileName.outerHTML})`;
-			// save tempdecal.wad
-			const { buffer, length } = (e as MessageEvent).data;
-			const a = document.createElement('a');
-			a.download = 'tempdecal.wad';
-			a.href = URL.createObjectURL(new Blob(
-				[new Uint8Array(buffer, 0, length)],
-				{ type: 'application/octet-stream' }
-			));
-			a.click();
-			URL.revokeObjectURL(a.href);
-		};
+		statusMsg.innerHTML = `${spinner.outerHTML} Processing ${file.name}...`;
+		fileName = file.name;
 
 		createImageBitmap(file).then((imgBmp: ImageBitmap) => {
-			const canvas = new OffscreenCanvas(imgBmp.width, imgBmp.height);
-			const ctx = canvas.getContext('2d');
-			if (!ctx) {
-				throw new Error('Failed to get canvas context');
-			}
-			ctx.drawImage(imgBmp, 0, 0);
-			const imgRaw = ctx.getImageData(
-				0, 0, imgBmp.width, imgBmp.height, { colorSpace: 'srgb'});
-			const msg = {
-				buffer: imgRaw.data.buffer,
-				width: imgRaw.width,
-				height: imgBmp.height,
-				usePointResample: pointResampleSwitch.checked,
-			};
-			worker.addEventListener('message', onMessage, { once: true });
-			worker.addEventListener('error', onError, { once: true });
-			worker.postMessage(msg, [imgRaw.data.buffer])
-		}).catch(onError);
+			worker.postMessage({
+				imgBmp,
+				usePointResample: pointResampleSwitch.checked
+			}, [imgBmp]);
+
+		});
 	};
 
 	window.addEventListener('dragover', (ev: Event) => {
