@@ -1,6 +1,6 @@
 [package]
 name = "img2tempdecal"
-version = "5.0.0"
+version = "5.0.1"
 authors = ["Nozomi Miyamori"]
 edition = "2021"
 

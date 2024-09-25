@@ -11,4 +11,4 @@ the [web directory](web)
 License
 ----------------
 
-MIT-0 or Public domain (whichever you want).
+MIT-0 and public domain.
