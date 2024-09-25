@@ -149,7 +149,7 @@ fn remap_to_indexed_color(
 }
 
 /// This makes tempdecal.wad from the given indexed color map.
-/// Only primary mipmap is used, and other mips are filled with 0.
+/// Only primary mipmap is used, and other mips are filled with 0xff.
 fn make_tempdecal<'a>(
     palette: &'a [RGB8; 256],
     index_map: &'a [u8],
@@ -193,9 +193,9 @@ fn make_tempdecal<'a>(
 	&[0; 8],
 	// mipmaps
 	&index_map,
-	&vec![0; m1size],
-	&vec![0; m2size],
-	&vec![0; m3size],
+	&vec![0xff; m1size],
+	&vec![0xff; m2size],
+	&vec![0xff; m3size],
 	// count of colors in a palette (always 256)
 	&256_u16.to_le_bytes(),
 	// palette
