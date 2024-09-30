@@ -161,9 +161,10 @@ fn make_tempdecal<'a>(
     let m1size = width * height / 4;
     let m2size = width * height / 16;
     let m3size = width * height / 64;
-    // texture_size = texture_header + mips + palette_count + palette
-    let texture_size = 0x30 + m0size + m1size + m2size + m3size + 2 + 0x300;
-    let texture_size_aligned = texture_size + (16 - texture_size % 16) % 16;
+    // texture_size = texture_header + (mips) + palette_count + palette
+    let texture_size = 0x28 + (m0size + m1size + m2size + m3size) + 2 + 0x300;
+    let texture_padding_size = (16 - texture_size % 16) % 16;
+    let texture_size_aligned = texture_size + texture_padding_size;
 
     [
 	// Header
@@ -173,7 +174,7 @@ fn make_tempdecal<'a>(
 	&1u32.to_le_bytes(),
 	// offset to directory
 	&(0x10 + texture_size_aligned as u32).to_le_bytes(),
-	// padding for alignment
+	// padding
 	&[0; 4],
 
 	// Texture
@@ -185,12 +186,10 @@ fn make_tempdecal<'a>(
 	// height
 	&(height as u32).to_le_bytes(),
 	// mips offsets from the begining of texture
-	&0x30_u32.to_le_bytes(),
-	&(0x30 + (m0size) as u32).to_le_bytes(),
-	&(0x30 + (m0size + m1size) as u32).to_le_bytes(),
-	&(0x30 + (m0size + m1size + m2size) as u32).to_le_bytes(),
-	// padding for alignment
-	&[0; 8],
+	&0x28_u32.to_le_bytes(),
+	&(0x28 + (m0size) as u32).to_le_bytes(),
+	&(0x28 + (m0size + m1size) as u32).to_le_bytes(),
+	&(0x28 + (m0size + m1size + m2size) as u32).to_le_bytes(),
 	// mipmaps
 	&index_map,
 	&vec![0xff; m1size],
@@ -201,14 +200,13 @@ fn make_tempdecal<'a>(
 	// palette
 	palette.as_bytes(),
 	// padding
-	&vec![0; (16 - texture_size % 16) % 16],
+	&vec![0; texture_padding_size],
 
 	// Directory
 
 	// offset to texture from the begining of WAD file
-	// (deader + directory)
 	&0x10u32.to_le_bytes(),
-	// compressed file size (same with file size in disk)
+	// compressed file size (the same as file size in disk)
 	&(texture_size as u32).to_le_bytes(),
 	// file size in disk
 	&(texture_size as u32).to_le_bytes(),
