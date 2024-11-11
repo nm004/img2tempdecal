@@ -54,7 +54,7 @@ fn adjust_size(
 	// We have to resize the texture.
 	//
 	// First, let's find the largest width and height that have the most similar
-	// aspect ratio that is acceptable for GoldSrc.
+	// aspect ratio that is valid for GoldSrc.
 
 	// We make the ratio table.
 	// Ref. https://www.the303.org/tutorials/goldsrcspraylogo.html
@@ -74,9 +74,8 @@ fn adjust_size(
 	    let r = r - ratio;
 	    (w, h, r * r)
 
-	// We do rev() because we want to maximize the width and the height.
-	// If several elements are equally minimum, the first element is returned (excerpt
-	// from the Rust doc).
+	// rev(): If several elements are equally minimum, the first element is
+	// returned (excerpt from the Rust doc).
 	}).rev().min_by(|x, y|
 	    x.2.partial_cmp(&y.2).unwrap()
 	).unwrap();
@@ -98,8 +97,8 @@ fn adjust_size(
 	resizer.resize(&texture, &mut texture1).unwrap();
 
 	// This makes each color fully opaque if its opacity is above 50%,
-	// otherwise makes it fully transparent. It is especially needed for images that
-	// uses transparency color gradient to avoid an undesirable quantization result.
+	// otherwise makes it fully transparent. It is especially needed for
+	// semitransparent images to avoid an undesirable quantization result.
 	for i in texture1.iter_mut() {
 	    i.a = i.a / 0x80 * 0xff
 	}
