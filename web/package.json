@@ -1,0 +1,20 @@
+{
+	"scripts": {
+		"build": "export cargo_prof=release; export rs_lib_outdir=release; bun run wasm-bindgen && bun run wasm-opt && tsc && vite build",
+		"cargo": "cargo build --target wasm32-unknown-unknown --manifest-path rs_lib/Cargo.toml --profile $cargo_prof",
+		"clean": "rm -Rf dist src/img2tempdecal_web* rs_lib/target .vite",
+		"dev": "export cargo_prof=dev; export rs_lib_outdir=debug; bun run wasm-bindgen && vite",
+		"preview": "vite preview",
+		"wasm-bindgen": "bun run cargo && wasm-bindgen --target web --out-dir src rs_lib/target/wasm32-unknown-unknown/$rs_lib_outdir/img2tempdecal_web.wasm",
+		"wasm-opt": "wasm-opt -O -o src/img2tempdecal_web_bg.wasm src/img2tempdecal_web_bg.wasm"
+	},
+	"devDependencies": {
+		"typescript": "5.8.3",
+		"vite": "7.0.6",
+		"vite-plugin-pwa": "0.19.8"
+	},
+	"dependencies": {
+		"@patternfly/elements": "3.0.1",
+		"workbox-precaching": "7.0.0"
+	}
+}

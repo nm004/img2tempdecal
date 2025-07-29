@@ -6,23 +6,26 @@ Image tempdecal.wad converter running in a web browser.
 Build Requirements
 ----------------
 
- * [Deno](https://deno.com/)
+ * [Bun](https://bun.sh/)
  * [Rust](https://www.rust-lang.com/)
- * [wasm-bindgen](https://github.com/rustwasm/wasm-bindgen/)
+ * [wasm-bindgen v0.2.95](https://github.com/rustwasm/wasm-bindgen/)
  * [wasm-opt (from binaryen)](https://github.com/WebAssembly/binaryen/)
 
 Build
 ----------------
 
 ```
+# Init build environment
+bun install --no-save
+
 # Development build
-deno task dev
+bun run dev
 
 # Production build (output into 'dist')
-deno task build
+bun run build
 
 # Preview production build output
-deno task preview
+bun run preview
 ```
 
 License
