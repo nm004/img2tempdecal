@@ -8,21 +8,21 @@ Build Requirements
 
  * [Bun](https://bun.sh/)
  * [Rust](https://www.rust-lang.com/)
- * [wasm-bindgen v0.2.95](https://github.com/rustwasm/wasm-bindgen/)
- * [wasm-opt (from binaryen)](https://github.com/WebAssembly/binaryen/)
+ * [vite+](https://viteplus.dev/)
+ * [wasm-pack](https://wasm-bindgen.github.io/wasm-pack/)
 
 Build
 ----------------
 
 ```
 # Init build environment
-bun install --no-save
+bun run wasm-pack:dev && bun install --no-save
 
 # Development build
 bun run dev
 
 # Production build (output into 'dist')
-bun run build
+bun run wasm-pack && bun run build
 
 # Preview production build output
 bun run preview

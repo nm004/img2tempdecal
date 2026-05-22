@@ -1,20 +1,36 @@
 {
-	"scripts": {
-		"build": "export cargo_prof=release; export rs_lib_outdir=release; bun run wasm-bindgen && bun run wasm-opt && tsc && vite build",
-		"cargo": "cargo build --target wasm32-unknown-unknown --manifest-path rs_lib/Cargo.toml --profile $cargo_prof",
-		"clean": "rm -Rf dist src/img2tempdecal_web* rs_lib/target .vite",
-		"dev": "export cargo_prof=dev; export rs_lib_outdir=debug; bun run wasm-bindgen && vite",
-		"preview": "vite preview",
-		"wasm-bindgen": "bun run cargo && wasm-bindgen --target web --out-dir src rs_lib/target/wasm32-unknown-unknown/$rs_lib_outdir/img2tempdecal_web.wasm",
-		"wasm-opt": "wasm-opt -O -o src/img2tempdecal_web_bg.wasm src/img2tempdecal_web_bg.wasm"
-	},
-	"devDependencies": {
-		"typescript": "5.8.3",
-		"vite": "7.0.6",
-		"vite-plugin-pwa": "0.19.8"
-	},
-	"dependencies": {
-		"@patternfly/elements": "3.0.1",
-		"workbox-precaching": "7.0.0"
-	}
+  "name": "img2tempdecal-web",
+  "type": "module",
+  "version": "0.0.0",
+  "private": true,
+  "scripts": {
+    "build": "vp build",
+    "check": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json",
+    "dev": "vp dev",
+    "preview": "vp preview",
+    "wasm-pack": "wasm-pack build --target web rs_lib",
+    "wasm-pack:dev": "wasm-pack build --dev --target web rs_lib"
+  },
+  "devDependencies": {
+    "@sveltejs/adapter-static": "^3.0.10",
+    "@sveltejs/kit": "^2.60.1",
+    "@sveltejs/vite-plugin-svelte": "^7.1.2",
+    "@types/node": "^25.9.1",
+    "@vite-pwa/sveltekit": "^1.1.0",
+    "svelte": "^5.55.9",
+    "svelte-check": "^4.4.8",
+    "typescript": "^6.0.3",
+    "vite": "npm:@voidzero-dev/vite-plus-core@latest",
+    "vite-plugin-pwa": "^1.3.0",
+    "vite-plus": "latest"
+  },
+  "dependencies": {
+    "@patternfly/elements": "4.4.0",
+    "img2tempdecal-web": "file:./rs_lib/pkg"
+  },
+  "packageManager": "bun@1.3.13",
+  "overrides": {
+    "vite": "npm:@voidzero-dev/vite-plus-core@latest",
+    "vitest": "npm:@voidzero-dev/vite-plus-test@latest"
+  }
 }

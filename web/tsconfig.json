@@ -1,29 +1,21 @@
 {
+	"extends": "./.svelte-kit/tsconfig.json",
 	"compilerOptions": {
-		"lib": ["ESNext", "DOM", "WebWorker"],
-		"target": "ESNext",
-		"module": "Preserve",
+		"lib": [
+			"WebWorker"
+		],
 		"moduleDetection": "force",
-		"jsx": "react-jsx",
 		"allowJs": true,
-
 		// Bundler mode
-		"moduleResolution": "bundler",
 		"allowImportingTsExtensions": true,
-		"verbatimModuleSyntax": true,
-		"noEmit": true,
-
 		// Best practices
-		"strict": true,
 		"skipLibCheck": true,
 		"noFallthroughCasesInSwitch": true,
 		"noUncheckedIndexedAccess": true,
 		"noImplicitOverride": true,
-
 		// Some stricter flags (disabled by default)
 		"noUnusedLocals": false,
 		"noUnusedParameters": false,
 		"noPropertyAccessFromIndexSignature": false,
-	},
-	"exclude": ["src/img2tempdecal_web*"],
+	}
 }
