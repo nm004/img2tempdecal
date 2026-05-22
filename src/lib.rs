@@ -66,7 +66,7 @@ fn adjust_size(
 	let h: Box<_> = r.map(|i| [i; N]).flatten().collect();
 
 	let ratio = width as f64 / height as f64;
-	let (w, h, _) = zip(w.iter(), h.iter()).filter(|(&w, &h)| {
+	let (w, h, _) = zip(w.iter(), h.iter()).filter(|&(&w, &h)| {
 	    let s = w * h;
 	    min_limit < s && s < max_limit
 	}).map(|(&w, &h)| {

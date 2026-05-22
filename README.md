@@ -1,14 +1,12 @@
-Img2tempdecal
-==================
+# img2tempdecal
 
-This is an image tempdecal.wad converter written in [Rust](https://rust-lang.org/).
-Tempdecal.wad is a custom spray format for Sven Co-op,
-Counter-Strike (CS 1.6), Half-Life, etc.
+An image to `tempdecal.wad` converter written in [Rust](https://rust-lang.org/).
 
-The top level directory is for core library and an example. Application code is in
-the [web directory](web)
+`tempdecal.wad` is the custom spray format used in GoldSrc engine games, including Sven Co-op, Counter-Strike (CS 1.6), and Half-Life.
 
-License
-----------------
+The root directory contains the core Rust library and examples, while the web application code is located in the [web](web) directory.
 
-MIT-0 and public domain.
+## License
+
+Dual-licensed under MIT-0 and the Public Domain.
+

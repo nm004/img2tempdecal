@@ -1,6 +1,22 @@
 /node_modules
-/dist
 
-/rs_lib/target
-/src/img2tempdecal_web*
-/.vite
+# Output
+.output
+.vercel
+.netlify
+.wrangler
+/.svelte-kit
+/build
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Env
+.env
+.env.*
+!.env.example
+!.env.test
+
+.dev.vars*
+!.dev.vars.example

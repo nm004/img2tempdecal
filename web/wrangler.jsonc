@@ -1,0 +1,14 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "tempdecal-conv",
+  "compatibility_flags": [],
+  "compatibility_date": "2026-06-12",
+  "assets": {
+    "directory": ".svelte-kit/cloudflare",
+  },
+  "workers_dev": true,
+  "preview_urls": true,
+  "observability": {
+    "enabled": true,
+  },
+}

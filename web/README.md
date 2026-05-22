@@ -1,34 +1,41 @@
-Img2tempdecal Web
-====================
+# img2tempdecal Web
 
-Image tempdecal.wad converter running in a web browser.
+An in-browser image to `tempdecal.wad` converter.
 
-Build Requirements
-----------------
+## Prerequisites
 
- * [Bun](https://bun.sh/)
- * [Rust](https://www.rust-lang.com/)
- * [wasm-bindgen v0.2.95](https://github.com/rustwasm/wasm-bindgen/)
- * [wasm-opt (from binaryen)](https://github.com/WebAssembly/binaryen/)
+* [Rust](https://www.rust-lang.com/)
+* [wasm-pack](https://wasm-bindgen.github.io/wasm-pack/)
+* [pnpm](https://pnpm.io/)
+* [vite+](https://viteplus.dev/)
 
-Build
-----------------
+## Build and Run (pnpm)
 
-```
-# Init build environment
-bun install --no-save
+```bash
+# Start the development server
+pnpm run dev
 
-# Development build
-bun run dev
+# Build for production
+pnpm run build
 
-# Production build (output into 'dist')
-bun run build
-
-# Preview production build output
-bun run preview
+# Preview the production build locally
+pnpm run preview
 ```
 
-License
-----------------
+## Build and Run (vp)
 
-MIT-0 or Public domain (whichever you want).
+```bash
+# Start the development server
+vp run dev
+
+# Build for production
+vp run build
+
+# Preview the production build locally
+vp preview
+```
+
+## License
+
+Dual-licensed under MIT-0 or the Public Domain (choose whichever you prefer).
+
